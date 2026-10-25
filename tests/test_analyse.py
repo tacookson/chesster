@@ -70,7 +70,7 @@ def _eval(cp, pv=()):
 def test_find_flags_uses_my_point_of_view_and_thresholds():
     game = chess.pgn.read_game(io.StringIO("1. e4 e5 2. Qh5 Nc6 3. Qxf7+ Kxf7 *"))
     # Evals (White's view) before each ply and after the last one.
-    evals = [_eval(30), _eval(30), _eval(30), _eval(0), _eval(0, ["f8e7"]),
+    evals = [_eval(30), _eval(30), _eval(30), _eval(0), _eval(0, ["h5e5"]),
              _eval(-800, ["e8f7"]), _eval(-800)]
     white = analyse.find_flags(game, chess.WHITE, evals, mistake=20, blunder=30)
     assert [(f.move_label, f.severity) for f in white] == [("3. Qxf7+", "blunder")]
@@ -83,3 +83,16 @@ def test_small_drops_are_not_flagged():
     game = chess.pgn.read_game(io.StringIO("1. e4 e5 *"))
     evals = [_eval(30), _eval(-50), _eval(-50)]
     assert analyse.find_flags(game, chess.WHITE, evals, mistake=20, blunder=30) == []
+
+
+def test_line_formats_black_moves_with_a_space_after_dots():
+    board = chess.Board()
+    board.push_san("e4")
+    pv = [chess.Move.from_uci(m) for m in ("e7e5", "g1f3", "b8c6")]
+    assert analyse.line(board, pv, 3) == "1... e5 2. Nf3 Nc6"
+
+
+def test_captured_names_the_piece():
+    board = chess.Board("4k3/8/8/3n4/4P3/8/8/4K3 w - - 0 1")
+    assert analyse.captured(board, chess.Move.from_uci("e4d5")) == "knight"
+    assert analyse.captured(board, chess.Move.from_uci("e1e2")) == ""

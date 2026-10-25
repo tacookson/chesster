@@ -58,6 +58,13 @@ class Flag:
     punished_by: str            # opponent's best reply to my move (SAN)
     best_uci: str
     punished_uci: str
+    before_cp: int = 0          # my point of view; mate as ±100000
+    after_cp: int = 0
+    best_line: str = ""         # first moves of the best line, e.g. "15. Bxc6 Qxc6 16. Qxc6 bxc6"
+    punish_line: str = ""       # first moves after my move, e.g. "15... Nxe5 16. Qxd7 Nxd7"
+    material: int = 0           # points lost (lost material) or missed (missed material)
+    best_takes: str = ""        # piece the best move captures, e.g. "knight"
+    punish_takes: str = ""      # piece of mine the punishing reply captures
     safe: tuple[int, int] | None = None  # (safe moves, legal moves), lost-ground flags only
     mate_in: int | None = None  # moves to mate, for missed or allowed mate
     merged: list[str] = field(default_factory=list)  # later moves merged into this moment
@@ -69,12 +76,35 @@ def format_eval(e: Eval, colour: chess.Color) -> str:
     if mate is not None:
         return f"M{mate}" if mate > 0 else f"−M{-mate}"
     cp = e.score.pov(colour).score()
+    if round(cp / 100, 1) == 0:
+        return "0.0"
     return f"{cp / 100:+.1f}".replace("-", "−")
 
 
 def move_label(board: chess.Board, move: chess.Move) -> str:
     dots = "." if board.turn == chess.WHITE else "..."
     return f"{board.fullmove_number}{dots} {board.san(move)}"
+
+
+def captured(board: chess.Board, move: chess.Move | None) -> str:
+    """Name of the piece `move` captures, or "" if it isn't a capture."""
+    if move is None or move not in board.legal_moves or not board.is_capture(move):
+        return ""
+    if board.is_en_passant(move):
+        return "pawn"
+    return chess.piece_name(board.piece_at(move.to_square).piece_type)
+
+
+def line(board: chess.Board, pv: list[chess.Move], plies: int) -> str:
+    """The first `plies` moves of a line in SAN, e.g. "15... Nxe5 16. Qxd7 Nxd7"."""
+    b = board.copy()
+    moves = []
+    for move in pv[:plies]:
+        if move not in b.legal_moves:
+            break
+        moves.append(move)
+        b.push(move)
+    return board.variation_san(moves).replace("...", "... ") if moves else ""
 
 
 def _material_after(board: chess.Board, pv: list[chess.Move], plies: int, colour: chess.Color) -> int:
@@ -87,8 +117,8 @@ def _material_after(board: chess.Board, pv: list[chess.Move], plies: int, colour
 
 
 def classify(before_board: chess.Board, after_board: chess.Board, before: Eval, after: Eval,
-             me: chess.Color) -> tuple[str, int | None]:
-    """Type label (and mate distance) for a flagged move.
+             me: chess.Color) -> tuple[str, int | None, int]:
+    """Type label, mate distance and material (points lost or missed) for a flagged move.
 
     Precedence: mate, then lost material, then missed material. Any missed mate is a missed
     chance, whatever its length; the mate distance shows whether it was simple.
@@ -96,17 +126,19 @@ def classify(before_board: chess.Board, after_board: chess.Board, before: Eval, 
     best_mate = before.mate(me)
     after_mate = after.mate(me)
     if after_mate is not None and after_mate < 0 and (best_mate is None or best_mate > 0):
-        return ALLOWED_MATE, -after_mate
+        return ALLOWED_MATE, -after_mate, 0
     if best_mate is not None and best_mate > 0 and (after_mate is None or after_mate <= 0):
-        return MISSED_MATE, best_mate
+        return MISSED_MATE, best_mate, 0
     start = material(before_board, me)
     # Opponent, me, opponent, me: did I end up 2+ points down within 2 moves?
-    if start - _material_after(after_board, after.pv, 4, me) >= 2:
-        return LOST_MATERIAL, None
+    lost = start - _material_after(after_board, after.pv, 4, me)
+    if lost >= 2:
+        return LOST_MATERIAL, None, lost
     # Me, opponent, me, opponent, me: did the best line win 2+ points within 3 moves?
-    if _material_after(before_board, before.pv, 5, me) - start >= 2:
-        return MISSED_MATERIAL, None
-    return DEEPER, None
+    missed = _material_after(before_board, before.pv, 5, me) - start
+    if missed >= 2:
+        return MISSED_MATERIAL, None, missed
+    return DEEPER, None, 0
 
 
 def evaluate_game(game, me: chess.Color, engine: chess.engine.SimpleEngine, depth: int) -> list[Eval]:
@@ -134,13 +166,14 @@ def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder
                 after_board.push(move)
                 best = before.pv[0] if before.pv else move
                 punish = after.pv[0] if after.pv else None
-                kind, mate_in = classify(board, after_board, before, after, me)
+                kind, mate_in, points = classify(board, after_board, before, after, me)
                 flags.append(Flag(
                     ply=ply,
                     move_label=move_label(board, move),
                     severity="blunder" if drop >= blunder else "mistake",
                     kind=kind,
                     mate_in=mate_in,
+                    material=points,
                     drop=drop,
                     before=format_eval(before, me),
                     after=format_eval(after, me),
@@ -148,6 +181,12 @@ def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder
                     punished_by=move_label(after_board, punish) if punish else "",
                     best_uci=best.uci(),
                     punished_uci=punish.uci() if punish else "",
+                    before_cp=before.cp(me),
+                    after_cp=after.cp(me),
+                    best_line=line(board, before.pv or [best], 4),
+                    best_takes=captured(board, best),
+                    punish_takes=captured(after_board, punish),
+                    punish_line=line(after_board, after.pv, 3),
                 ))
         board.push(move)
     return flags
