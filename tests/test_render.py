@@ -87,3 +87,9 @@ def test_no_match_id_for_non_rapid():
     text = render.render(_info(), "1. e4 *", None)
     assert "match:" not in text
     assert "# 23 Oct 2026 · Loss as White" in text
+
+
+def test_coach_games_get_no_match_id():
+    coach = _game("5", 1792760400) | dict(white={"username": "Me4tbegZ0r"}, black={"username": "Coach-Magnus"})
+    human = _game("6", 1792764000) | dict(white={"username": "Me4tbegZ0r"}, black={"username": "opp"})
+    assert render.match_ids([coach, human], "America/Toronto") == {"6": "261023-1"}

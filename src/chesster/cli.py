@@ -67,6 +67,8 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.game:
         game, nearby = fetch.find_game(cfg.username, args.game)
+        if fetch.is_coach(game):
+            sys.exit(f"{args.game} is a game against a Chess.com coach bot; chesster doesn't import those.")
         todo, matches = [game], render.match_ids(nearby, cfg.timezone)
     else:
         print(f"Fetching {cfg.username}'s archives from Chess.com…")

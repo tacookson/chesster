@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 import chess
 import chess.pgn
 
-from chesster import analyse
+from chesster import analyse, fetch
 from chesster.analyse import Flag
 
 DRAWS = {"agreed", "repetition", "stalemate", "insufficient", "50move", "timevsinsufficient"}
@@ -79,7 +79,8 @@ def _local_end(game: dict, timezone: str) -> datetime:
 
 def match_ids(games: list[dict], timezone: str) -> dict[str, str]:
     """Match ID per rapid game: local date as YYMMDD, then its number that day by end time."""
-    rapid = sorted((g for g in games if g.get("time_class") == "rapid" and g.get("rules") == "chess"),
+    rapid = sorted((g for g in games if g.get("time_class") == "rapid" and g.get("rules") == "chess"
+                    and not fetch.is_coach(g)),
                    key=lambda g: g["end_time"])
     ids, per_day = {}, {}
     for game in rapid:
