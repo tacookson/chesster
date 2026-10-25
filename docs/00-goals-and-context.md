@@ -32,6 +32,10 @@
 - **Input:** triggered manually when I sit down to review, which may be after several games.
 - **Which games:** every rapid game not already archived (the archive is the record of what's done), with an option to re-run one game by URL. Rapid only by default; an option to include other time controls.
 - **Chess.com username:** Me4tbegZ0r (lowercase in API paths: `me4tbegz0r`).
+- **How errors are identified:** Stockfish flags moves by drop in my winning chances. Stockfish alone can't tell whether an error is human-findable at my level, so:
+  1. **Baseline (build now):** each flag gets a simple type label (material, mate in ≤2, deeper). Nothing hidden. Consecutive flags for the same missed idea merge into one moment.
+  2. **Spike in parallel:** test Maia-3 locally on macOS (inputs, move probabilities across ratings, speed, licence).
+  3. **If the spike works:** chesster classifies each flag N / L / X / R automatically (the crossover method), and can also estimate whether an opponent at my level would have punished it. maiachess.com stays the board either way.
 - **Output:** a markdown file per game, which is also its archive entry.
 - **Archive scope:** my entire Chess.com history (the account's archive starts October 2026).
 

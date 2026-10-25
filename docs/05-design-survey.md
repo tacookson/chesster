@@ -76,6 +76,23 @@ The process is well specified and the tooling is constrained, but there is no to
     - **Verified Oct 25:** `https://api.chess.com/pub/player/{username}/games/archives` lists monthly archives; `.../games/{YYYY}/{MM}` returns games as JSON without auth. Each game has `url`, `pgn`, `time_class`, `rated`, `white`/`black`, `eco`, `end_time` and `accuracies` (to hide). The PGN carries `[%clk h:mm:ss.s]` after every move. There is no documented single-game endpoint, so a game is found within its month's archive.
     - Original list: (validate before building): Chess.com archive endpoint, rate limits and `%clk` presence; local Maia-3 inference with a rating sweep; where the tooling runs (machine, OS, Python).
 
+## Evidence: Stockfish flags on my October 2026 games
+
+Stockfish 16, depth 16, flag = my winning chances dropped 20+ points (Lichess formula), first 5 moves skipped. 16 rated 15+10 games, 31 flags (about 2 per game):
+
+| Kind | Count |
+| --- | --- |
+| Missed free material (best move wins 2+ within 3 moves) | 10 |
+| Lost material within 2 moves | 9 |
+| Missed mate in 1–2 | 5 |
+| Missed long mate (mate in 8) | 1 |
+| Other: no quick material change | 7 |
+
+- About three-quarters of flags are simple safety errors; the rest are where "is this human-findable?" matters.
+- A depth-4 search also saw all 31 drops, so shallow search depth is not a usable proxy for human difficulty.
+- One missed idea was flagged on three consecutive moves; such runs should merge into one moment.
+- Categories are crude material counts over one month of games.
+
 ## Dependencies
 
 Gap 1 decides what can be tracked, which bounds gaps 3, 4 and 11. Gaps 2, 5, 7 and 8 are rule-tightening that needs no code. Gap 13 is validation work that can run in parallel.
