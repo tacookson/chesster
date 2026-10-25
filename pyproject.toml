@@ -1,0 +1,16 @@
+[project]
+name = "chesster"
+version = "0.1.0"
+description = "Fetch my Chess.com rapid games, flag big swings with Stockfish, and archive each game as markdown."
+requires-python = ">=3.11"
+dependencies = ["chess>=1.10"]
+
+[project.scripts]
+chesster = "chesster.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

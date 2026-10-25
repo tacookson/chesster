@@ -106,9 +106,10 @@ The header matches the notebook entry's header (date, colour, result, opponent, 
 
 ### Slice 2: Stockfish flags
 
-- For each of my moves: evaluate before and after at the configured depth, from my point of view. Convert to winning chances (Lichess curve, cp clamped to ±1000; mate transitions graded as in Lichess `Advice.scala`). Flag drops at or above the mistake threshold; mark blunders at the higher threshold.
+- For each of my moves: evaluate before and after at the configured depth, from my point of view. Convert to winning chances (Lichess curve, cp clamped to ±1000, a forced mate counted as ±1000 cp). Flag drops at or above the mistake threshold; mark blunders at the higher threshold.
 - Missed chances need no special case: if the opponent hung a piece, my winning chances before my move are already high, so not taking it shows as a drop.
-- Label each flag by type: **material** (I lose material within 2 moves, or the best move wins 2+ within 3), **mate** (a mate in 1–2 was available or allowed), **deeper** (anything else).
+- Label each flag by type, in this order: **allowed mate in N**, **missed mate in N**, **lost material** (I'm 2+ points down within 2 moves), **missed material** (the best line wins 2+ within 3 moves), **deeper** (anything else). The mate distance shows whether a mate was simple.
+- Mates go through the same Win% rule as everything else (mate = ±1000 cp), not Lichess's separate mate rules: its −700 / −999 cp cut-offs are tuned to its lower bars, and the clamp gives the same behaviour at ours (losing a mate while still +8 isn't flagged; losing it to 0.0 is).
 - Merge consecutive flags for the same missed idea into one moment.
 - **Safe-move count** on flags where I lost ground (types **material**-lost and **deeper**): score every legal move with MultiPV and count those within the mistake threshold of the best move, e.g. "35 of 48 moves held". Not shown on missed chances, where only the punishing move is "safe" and the count reads as hard when it usually isn't. Shown inside the fold, since it hints at the answer. Evidence: `docs/05-design-survey.md`.
 - Render labels on top and engine answers (best move, punishing reply, eval change, safe-move count) in `<details>`.

@@ -1,0 +1,17 @@
+# chesster settings. See docs/06-build-plan.md ("Rules to confirm").
+
+username = "Me4tbegZ0r"
+timezone = "America/Toronto"
+games_dir = "games"
+time_classes = ["rapid"]
+
+[engine]
+path = "stockfish"   # on PATH after `brew install stockfish`, or an absolute path
+depth = 16           # depth for every position's evaluation
+safe_depth = 12      # depth for the safe-move count (scores every legal move)
+
+[thresholds]
+# Drops in my winning chances, in Win% points (Lichess curve).
+# About 2x Lichess's own bars (5 / 10 / 15); see docs/07.
+mistake = 20
+blunder = 30
