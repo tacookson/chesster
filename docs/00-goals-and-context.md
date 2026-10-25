@@ -37,6 +37,7 @@
   2. **Spike in parallel:** test Maia-3 locally on macOS (inputs, move probabilities across ratings, speed, licence).
   3. **If the spike works:** chesster classifies each flag N / L / X / R automatically (the crossover method), and can also estimate whether an opponent at my level would have punished it. maiachess.com stays the board either way.
 - **Output:** a markdown file per game, which is also its archive entry.
+- **Viewing and reveal:** files are read in VS Code's Markdown preview. Each flag shows its label up top; the engine answer (best move, punishing reply, eval change) sits in a collapsed `<details>` block underneath. To verify: `<details>` folds in VS Code's built-in preview (the Cursor forum reports it does in the dedicated preview).
 - **Archive scope:** my entire Chess.com history (the account's archive starts October 2026).
 
 **Review method**
