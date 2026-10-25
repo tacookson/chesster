@@ -44,6 +44,7 @@ Settings (username, thresholds, engine depth, Stockfish path) live in `chesster.
 | `docs/05-design-survey.md` | Survey of the current design, its inputs, and gaps to close before building tooling |
 | `docs/06-build-plan.md` | Build plan: slices, Maia spike, file format, and rule defaults |
 | `docs/07-mistake-classification-research.md` | Research: severity, difficulty and cause frameworks for classifying mistakes, and what they mean for chesster |
+| `docs/08-maia-spike.md` | Maia spike (M1): which model maiachess.com runs, Maia-2 vs Maia-3 locally, timings, crossovers in my October flags |
 | `docs/assets/chesscom-analysis-board-example.png` | Screenshot of the Chess.com Analysis board used as the worked example |
 | `templates/game-entry.md` | Per-game notebook entry |
 | `templates/weekly-page.md` | Weekly tally page |
