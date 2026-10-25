@@ -72,7 +72,7 @@ The process is well specified and the tooling is constrained, but there is no to
 
 12. **Source of truth.** The docs were exported from two living artifacts that may have been edited since. Decide whether this repo is now canonical.
 
-13. **Integration checks still to do** (validate before building): Chess.com archive endpoint, rate limits and `%clk` presence; local Maia-3 inference with a rating sweep; where the tooling runs (machine, OS, Python).
+13. **Integration checks still to do** (local Maia-3 deferred by the companion decision, Oct 25) (validate before building): Chess.com archive endpoint, rate limits and `%clk` presence; local Maia-3 inference with a rating sweep; where the tooling runs (machine, OS, Python).
 
 ## Dependencies
 
