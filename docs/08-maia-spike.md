@@ -47,7 +47,7 @@ Sources: [maiachess.com/analysis](https://www.maiachess.com/analysis) (bundle in
 - **Maia-2 (MIT)** could be vendored with its notice, but it's the no-go model.
 - **Maia-3 code (AGPLv3):** depend on it rather than copying it in. If chesster vendored it and was ever distributed, chesster would have to be AGPL too. A git dependency in `pyproject.toml` avoids that.
 - **Site ONNX:** download it at first run (as the browser does) and keep it out of git, since its licence is unstated.
-- My spike's tokeniser is a 15-line reimplementation of a 64×12 one-hot board, which is a standard encoding. I'd still keep it outside the repo until you decide how M2 loads the model.
+- The spike's board encoder (`scratch/maia-spike/site_sweep.py`, `onnx_check.py`) is a 15-line 64×12 one-hot board written for the spike, not copied from either repo. It's a standard encoding. M2 should revisit it once you decide how chesster loads the model.
 
 ## 3. What inputs does it take?
 
@@ -134,7 +134,6 @@ My move is essentially never played, so this is R (a lapse). But the best move i
 4. **Numeric rules from survey gaps 5 and 6**, now with data. The two are below.
    - **Gap 5 needs:** a "rare" threshold (5% used here), the minimum probability gap for a crossover (5 points used here), and what to call "best ahead everywhere", "no crossover" and "multiple crossings".
    - **Gap 6 needs:** where a crossover at 2000–2600 goes (3 of the 9 here).
-5. **Whether to keep the spike scripts** (see below).
 
 ## What to run on the Mac
 
@@ -145,4 +144,4 @@ The cloud run needs confirming on macOS before M2 starts:
 3. **Maia3-23M on CPU and on Apple MPS**: load time, one-position sweep, and all-flags sweep.
 4. **`brew info stockfish`** for the version, then `uv run chesster` on a scratch copy of the config to check the flag count (42 here with Stockfish 16).
 
-These need the spike scripts, which currently live only in the cloud session's scratch directory and disappear when it ends.
+The scripts and exact commands are in `scratch/maia-spike/` (see its README).
