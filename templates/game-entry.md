@@ -1,7 +1,7 @@
 # Per-Game Entry (half a page)
 
 ```text
-#__  Date ____  W/B  Result W/L/D  Opp ____  Opening ________
+#______  W/B  Result W/L/D  Opp ____  Opening ________
 Clock left (me/opp): ___ / ___
 HOT: Turned at move __ because ___________________________
      Feeling / clock: ____________________________________
@@ -14,6 +14,7 @@ ENGINE: big swings I didn't find: _________________________
 NEXT TIME I WILL: ________________________________________
 ```
 
+- **#:** the match ID from the game file's title, e.g. `261014-1` (date as YYMMDD, then game of the day).
 - **HOT** lines are written right after the game, before any engine.
 - **Moments:** up to 3. In a loss, include the first moment material was lost.
 - **Tag:** H / M / T / K / C / O / E (see `tag-key.md`).
@@ -23,7 +24,7 @@ NEXT TIME I WILL: ________________________________________
 ## Filled-in example (invented)
 
 ```text
-#23  Oct 14  B  Result L  Opp 712  Opening: Italian
+#261014-1  B  Result L  Opp 712  Opening: Italian
 Clock left (me/opp): 6:40 / 9:15
 HOT: Turned at move 14 – lost my knight, then got mated
      Felt fine, played 14...Nd4 fast. Tilted after.
