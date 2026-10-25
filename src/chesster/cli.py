@@ -36,9 +36,9 @@ def _progress(prefix: str) -> analyse.Progress:
 
 
 def process(game: dict, cfg: config.Config, engine: chess.engine.SimpleEngine | None,
-            progress: analyse.Progress = analyse._quiet) -> Path:
+            progress: analyse.Progress = analyse._quiet, match: str | None = None) -> Path:
     pgn_game = chess.pgn.read_game(io.StringIO(game["pgn"]))
-    info = render.game_info(game, pgn_game, cfg.username, cfg.timezone)
+    info = render.game_info(game, pgn_game, cfg.username, cfg.timezone, match)
     moments = None
     if engine is not None:
         me = chess.WHITE if info.colour == "white" else chess.BLACK
@@ -66,11 +66,14 @@ def main(argv: list[str] | None = None) -> None:
     time_classes = ALL_TIME_CLASSES if args.all_time_controls else cfg.time_classes
 
     if args.game:
-        todo = [fetch.find_game(cfg.username, args.game)]
+        game, nearby = fetch.find_game(cfg.username, args.game)
+        todo, matches = [game], render.match_ids(nearby, cfg.timezone)
     else:
         print(f"Fetching {cfg.username}'s archives from Chess.com…")
         done = _existing_ids(cfg.games_dir)
-        todo = [g for g in fetch.games(cfg.username, time_classes) if fetch.game_id(g) not in done]
+        fetched = list(fetch.games(cfg.username, time_classes))
+        matches = render.match_ids(fetched, cfg.timezone)
+        todo = [g for g in fetched if fetch.game_id(g) not in done]
     if not todo:
         print("No new games.")
         return
@@ -80,7 +83,7 @@ def main(argv: list[str] | None = None) -> None:
         for n, game in enumerate(todo, 1):
             start = time.monotonic()
             prefix = f"[{n}/{len(todo)}]"
-            path = process(game, cfg, engine, _progress(prefix))
+            path = process(game, cfg, engine, _progress(prefix), matches.get(fetch.game_id(game)))
             print(f"\r\x1b[2K{prefix} {path} ({time.monotonic() - start:.0f}s)")
     finally:
         if engine is not None:

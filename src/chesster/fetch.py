@@ -29,11 +29,19 @@ def game_id(game: dict) -> str:
     return game["url"].rstrip("/").rsplit("/", 1)[1]
 
 
-def find_game(username: str, url: str) -> dict:
-    """Find one game by its URL. There is no single-game endpoint, so search the archives."""
+def find_game(username: str, url: str) -> tuple[dict, list[dict]]:
+    """Find one game by its URL, with every game in its month and the months either side.
+
+    There is no single-game endpoint, so search the archives. The neighbouring months are
+    included because a local day can span two monthly archives (they're split by UTC).
+    """
     wanted = url.rstrip("/").rsplit("/", 1)[1]
-    for archive in reversed(archive_urls(username)):
-        for game in _get(archive).get("games", []):
+    archives = archive_urls(username)
+    for i in reversed(range(len(archives))):
+        month = _get(archives[i]).get("games", [])
+        for game in month:
             if game_id(game) == wanted:
-                return game
+                nearby = [g for j in (i - 1, i + 1) if 0 <= j < len(archives)
+                          for g in _get(archives[j]).get("games", [])]
+                return game, month + nearby
     raise LookupError(f"Game {url} not found in {username}'s archives")
