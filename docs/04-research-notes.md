@@ -19,7 +19,7 @@ Findings, thresholds and caveats behind the review system, in paraphrase. Useful
 ## Engine thresholds
 
 - **±2 filter.** Studer's One-Third Rule article treats swings under about 2 pawns as negligible for beginners ([Next Level Chess](https://nextlevelchess.com/the-one-third-rule/)). Written with blitz in mind.
-- **Winning chances, not raw points.** Lichess converts evaluations to winning chances with a curve fitted on its own games. Per Lichess forum threads quoting its source code, a drop of 10 / 20 / 30 percentage points in winning chances is labelled inaccuracy / mistake / blunder. Roughly: +1 ≈ 60% winning chances, +4 ≈ 83%. This is why +9 → +6 barely matters while +1 → −2 does. (Not verified against the code directly.)
+- **Winning chances, not raw points.** Lichess converts evaluations to winning chances with a curve fitted on its own games. Its code labels a drop of 0.1 / 0.2 / 0.3 in winning chances on a −1 to +1 scale as inaccuracy / mistake / blunder, which is **5 / 10 / 15 Win% points**. Forum threads quoting "10 / 20 / 30 percentage points" misread the scale. Roughly: +1 ≈ 60% winning chances, +4 ≈ 83%. This is why +9 → +6 barely matters while +1 → −2 does. Corrected Oct 25, 2026 against lila `Advice.scala`: see `docs/07-mistake-classification-research.md`.
 - **Practical rule used here:** look at Blunder/Miss labels or swings of 2+ points that happened while the game was roughly balanced, or that threw away a win.
 
 ## Chess.com facts (as of October 2026)

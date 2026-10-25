@@ -37,7 +37,7 @@ Help me (a ~700 Chess.com rapid player) analyze my own games using the review me
 ## Key domain facts for implementers
 
 - Chess.com shows evaluations from White's side; maiachess.com shows them from the side to move. Normalize to one convention.
-- Lichess labels mistakes by drops in winning chances (10 / 20 / 30 points = inaccuracy / mistake / blunder, per forum quotes of its code). See `docs/04-research-notes.md`.
+- Lichess labels mistakes by drops in winning chances: 0.1 / 0.2 / 0.3 on a −1 to +1 scale, i.e. **5 / 10 / 15 Win% points** = inaccuracy / mistake / blunder (verified in lila `Advice.scala`; the "10 / 20 / 30" figure in forum posts is a misreading). See `docs/07-mistake-classification-research.md`.
 - Maia uses the Lichess rating scale. My ~700 Chess.com rapid maps to roughly 1000–1200 there (approximate).
 - Maia-3 was trained on Lichess blitz games (Jan 2023 – Jul 2025); it's a close guide for 15+10 rapid, not exact.
 - Maia's top-move prediction is right about 57% of the time; trust patterns across games, not single positions.

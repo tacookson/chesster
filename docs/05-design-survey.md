@@ -33,11 +33,11 @@ The process is well specified and the tooling is constrained, but there is no to
 
    | Change | Drop in winning chances | Lichess label |
    | --- | --- | --- |
-   | 0 → −2 | 17.6 points | mistake, not blunder |
-   | +1 → −2 | 26.7 points | mistake, not blunder |
-   | +9 → +6 | 6.4 points | nothing |
+   | 0 → −2 | 17.6 points | blunder |
+   | +1 → −2 | 26.7 points | blunder |
+   | +9 → +6 | 6.4 points | inaccuracy |
 
-   A Lichess-style blunder (30-point drop) from a level position needs about −3.3. A swing finder needs one rule, e.g. "a drop of at least N winning-chance points from my point of view". The rule must also cover **missed chances** (opponent errors not punished), which Step 3 counts but the swing-finder idea doesn't mention.
+   (Labels corrected Oct 25: Lichess thresholds are 5 / 10 / 15 Win% points, not 10 / 20 / 30; see `docs/07-mistake-classification-research.md`. The draft 20 / 30 rule is about twice Lichess and close to Chess.com's Expected Points bands.) A swing finder needs one rule, e.g. "a drop of at least N winning-chance points from my point of view". The rule must also cover **missed chances** (opponent errors not punished), which Step 3 counts but the swing-finder idea doesn't mention.
 
 3. **Maia class scope.** Principle 5 says classify *each* moment N/L/X/R; the templates and weekly plan say only the weekly Maia game, because the manual crossover costs 2–3 minutes per moment. Automation removes that cost, so the scope needs deciding again.
 
