@@ -6,7 +6,7 @@
 | --- | --- |
 | Platform | Chess.com |
 | Time control | Rapid, 15+10 |
-| Rating | About 700 Chess.com rapid (roughly 1000–1200 on the Lichess scale) |
+| Rating | 773–816 Chess.com rapid (October 2026). Lichess equivalent roughly 1000–1200, based on ~700; needs re-deriving (Q5) |
 | Volume | 5–7 games a week |
 | Review time budget | 10–20 minutes per game |
 | Note-taking | Physical paper notebook |
@@ -30,7 +30,7 @@
 - **Shape: a companion to maiachess.com.** chesster fetches Chess.com games, archives them, runs Stockfish to list each game's flagged moves, and hands over the PGN to paste into maiachess.com. Positions are studied on maiachess.com with the notebook open. A standalone tool with its own board and local Maia-3 is deferred until pasting into Maia proves to be real friction.
 - **Runs on:** my laptop (macOS), triggered manually. Not GitHub Actions.
 - **Input:** triggered manually when I sit down to review, which may be after several games.
-- **Which games:** every rapid game not already archived (the archive is the record of what's done), with an option to re-run one game by URL. Rapid only by default; an option to include other time controls.
+- **Which games:** every rapid game not already archived (the archive is the record of what's done), with an option to re-run one game by URL. Rapid only by default; an option to include other time controls. Games against Chess.com's coach bots (usernames starting `Coach-`, e.g. Coach-Magnus) are never imported.
 - **Chess.com username:** Me4tbegZ0r (lowercase in API paths: `me4tbegz0r`).
 - **How errors are identified:** Stockfish flags moves by drop in my winning chances. Stockfish alone can't tell whether an error is human-findable at my level, so:
   1. **Baseline (build now):** each flag gets a simple type label (material, mate in ≤2, deeper). Nothing hidden. Consecutive flags for the same missed idea merge into one moment.

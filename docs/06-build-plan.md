@@ -54,6 +54,7 @@ The game ID ends each filename, so dedupe is a filename check. Dates use America
 
 ````markdown
 ---
+match: 261024-1
 url: https://www.chess.com/game/live/185827995884
 date: 2026-10-24
 colour: white
@@ -63,7 +64,7 @@ my_rating: 797
 opening: Queen's Pawn Opening, Accelerated London System
 ---
 
-# 2026-10-24 · White · Loss · vs suresh_0705 (932)
+# 261024-1 · 2026-10-24 · White · Loss · vs suresh_0705 (932)
 
 Opening: Queen's Pawn Opening, Accelerated London System
 Clock left (me / opp): 3:12 / 8:40
@@ -88,6 +89,8 @@ Clock left (me / opp): 3:12 / 8:40
 ````
 
 The header matches the notebook entry's header (date, colour, result, opponent, opening, clocks), so I can copy it straight into the notebook.
+
+**Match ID** (`261024-1`): the game's local date as YYMMDD, then its number among that day's rapid games, by end time. Rapid games only; other time controls get none. It's worked out from Chess.com's game list each run, so re-processing a game with `--game` gives it the same ID. It goes in the notebook entry's `#` slot to link the page to the file.
 
 ## Slices
 
