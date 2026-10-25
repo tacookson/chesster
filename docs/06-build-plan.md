@@ -7,7 +7,7 @@ Written October 25, 2026.
 ## What chesster does
 
 1. Fetches my Chess.com games and finds rapid games with no archive file yet.
-2. Runs Stockfish on each new game and flags my moves that cost 20+ points of winning chances.
+2. Runs Stockfish on each new game and flags my moves that cost 15+ points of winning chances.
 3. Writes one markdown file per game: header, flagged moves with labels, engine answers folded away, and the PGN to paste into maiachess.com.
 
 I read the file in VS Code's Markdown preview, study the flagged positions on maiachess.com, and write insights in my notebook.
@@ -108,8 +108,8 @@ The header matches the notebook entry's header (date, colour, result, opponent, 
 
 - For each of my moves: evaluate before and after at the configured depth, from my point of view. Convert to winning chances (Lichess curve, cp clamped to ±1000, a forced mate counted as ±1000 cp). Flag drops at or above the mistake threshold; mark blunders at the higher threshold.
 - Missed chances need no special case: if the opponent hung a piece, my winning chances before my move are already high, so not taking it shows as a drop.
-- Label each flag by type, in this order: **allowed mate in N**, **missed mate in N**, **lost material** (I'm 2+ points down within 2 moves), **missed material** (the best line wins 2+ within 3 moves), **deeper** (anything else). The mate distance shows whether a mate was simple.
-- Mates go through the same Win% rule as everything else (mate = ±1000 cp), not Lichess's separate mate rules: its −700 / −999 cp cut-offs are tuned to its lower bars, and the clamp gives the same behaviour at ours (losing a mate while still +8 isn't flagged; losing it to 0.0 is).
+- Label each flag by type, in this order: **allowed mate in N**, **missed mate in N**, **lost material** (I'm 2+ points down within 3 moves), **missed material** (the best line wins 2+ within 3 moves; both counts play on until the captures stop, so a trade isn't cut off half-way), **deeper** (anything else). The mate distance shows whether a mate was simple.
+- Mates go through the same Win% rule as everything else (mate = ±1000 cp), so losing a mate while still +8 isn't flagged and losing it to 0.0 is. **Exception (Oct 25):** walking into a forced mate also follows Lichess's rule (blunder; mistake below −7; hidden below −10). A Maia game showed a mate-in-1 allowed at −7.5 costing only 3.4 Win% points, so the Win% rule alone never flagged it. Lichess's lost-mate rule is not copied: missing a mate while still +5 doesn't change the result.
 - Merge consecutive flags for the same missed idea into one moment.
 - **Safe-move count** on flags where I lost ground (types **material**-lost and **deeper**): score every legal move with MultiPV and count those within the mistake threshold of the best move, e.g. "35 of 48 moves held". Not shown on missed chances, where only the punishing move is "safe" and the count reads as hard when it usually isn't. Shown inside the fold, since it hints at the answer. Evidence: `docs/05-design-survey.md`.
 - Render labels on top and engine answers (best move, punishing reply, eval change, safe-move count) in `<details>`.
@@ -145,14 +145,31 @@ Answer, on my Mac:
 - Before building, tighten the rules in survey gaps 5 and 6: numeric definitions of "rare", the 2000–2600 gap, multiple crossings, and which Maia rating counts as "me" (my Chess.com rating is now 773–816, not ~700).
 - Optional: estimate how likely an opponent at my level was to find the punishing reply.
 
+### Deferred: a rating-scale difficulty score
+
+Considered October 25, 2026 and set aside. The manual crossover on maiachess.com already answers "how hard was this?", and any score would be accurate only to a few hundred points, worst near my band (`docs/07`). Revisit if reading the crossover often goes over its 2–3 minutes or keeps giving no clear answer, or if M1 is a go.
+
+Score the two questions separately:
+
+- **Position difficulty (50% rating).** Sum Maia's probabilities over the safe moves (the slice 2 definition) at each rating. Report the rating where that sum crosses 50%, in bands, with "unclear" allowed. This is more robust than the two-line crossover and could replace it for N / L / X / R.
+- **Temptation.** P(my move) at my rating, and the rating where it falls below about 10%.
+
+Ideas that need no local Maia:
+
+- **Lichess explorer by rating bucket.** Who actually plays my move in early positions (roughly moves 1–15). It covers the moves Maia skips. Check the current API and auth rules first.
+- **Puzzle-theme median rating.** Median rating of Lichess puzzles with the missed idea's theme. Coarse.
+
+Never show a single precise number. Difficulty is engine output, so it stays inside the fold.
+
 ## Rules to confirm
 
 Defaults chesster ships with. All live in `chesster.toml` so they can change without code changes.
 
 | Rule | Default | Why / open point |
 | --- | --- | --- |
-| Mistake threshold | 20-point drop in winning chances | ≈ Studer's 2-point rule from a level position (0 → −2.3) |
+| Mistake threshold | 15-point drop in winning chances | Lowered from 20 on Oct 25: 20 matched Studer's 2-point rule only from equality and missed 2-pawn swings from slightly worse (−1.3 → −3.5 = 16.7 points). Lichess's blunder line. On the 16 October games: 32 → 39 flags. Also the safe-move cut-off |
 | Blunder threshold | 30-point drop | About 2× Lichess (whose bars are 5 / 10 / 15 Win% points); close to Chess.com's Expected Points bands. See `docs/07` |
+| Walking into mate | Blunder; mistake if I was already below −7; hidden below −10 | Lichess's rule (lila `Advice.scala`). Win% barely moves in a lost position, so without it a mate-in-1 allowed at −7.5 went unflagged. Moves that walk into an avoidable mate don't count as safe |
 | Inaccuracies | Hidden | Non-negotiable |
 | Engine depth | 16 | 16 games took about 2 minutes in the experiment; raise if the Mac is fast |
 | Skip opening moves | None for Stockfish flags | The experiment skipped moves 1–5; a hung piece on move 4 still matters. The 5-move skip stays for Maia only |

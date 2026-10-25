@@ -13,5 +13,5 @@ safe_depth = 12      # depth for the safe-move count (scores every legal move)
 [thresholds]
 # Drops in my winning chances, in Win% points (Lichess curve).
 # About 2x Lichess's own bars (5 / 10 / 15); see docs/07.
-mistake = 20
+mistake = 15
 blunder = 30

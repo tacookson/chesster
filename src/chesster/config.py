@@ -28,6 +28,6 @@ def load(path: Path) -> Config:
         engine_path=engine.get("path", "stockfish"),
         depth=engine.get("depth", 16),
         safe_depth=engine.get("safe_depth", 12),
-        mistake=thresholds.get("mistake", 20),
+        mistake=thresholds.get("mistake", 15),
         blunder=thresholds.get("blunder", 30),
     )

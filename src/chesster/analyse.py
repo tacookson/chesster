@@ -108,9 +108,13 @@ def line(board: chess.Board, pv: list[chess.Move], plies: int) -> str:
 
 
 def _material_after(board: chess.Board, pv: list[chess.Move], plies: int, colour: chess.Color) -> int:
+    """Material after the first `plies` of a line, played on until the captures stop.
+
+    Running past the captures keeps a trade from being cut off half-way.
+    """
     b = board.copy()
-    for move in pv[:plies]:
-        if move not in b.legal_moves:
+    for n, move in enumerate(pv):
+        if move not in b.legal_moves or (n >= plies and not b.is_capture(move)):
             break
         b.push(move)
     return material(b, colour)
@@ -130,8 +134,9 @@ def classify(before_board: chess.Board, after_board: chess.Board, before: Eval, 
     if best_mate is not None and best_mate > 0 and (after_mate is None or after_mate <= 0):
         return MISSED_MATE, best_mate, 0
     start = material(before_board, me)
-    # Opponent, me, opponent, me: did I end up 2+ points down within 2 moves?
-    lost = start - _material_after(after_board, after.pv, 4, me)
+    # Opponent, me, opponent, me, opponent, me: did I end up 2+ points down within 3 moves?
+    # Three, not two: the engine's line often grabs something else before collecting.
+    lost = start - _material_after(after_board, after.pv, 6, me)
     if lost >= 2:
         return LOST_MATERIAL, None, lost
     # Me, opponent, me, opponent, me: did the best line win 2+ points within 3 moves?
@@ -153,6 +158,24 @@ def evaluate_game(game, me: chess.Color, engine: chess.engine.SimpleEngine, dept
     return evals
 
 
+def mate_severity(before: Eval, after: Eval, me: chess.Color) -> str | None:
+    """Lichess's rule for walking into a forced mate (lila Advice.scala, MateCreated).
+
+    Blunder, or mistake if I was already below −7; below −9.99 Lichess calls it an
+    inaccuracy, which chesster hides.
+    """
+    after_mate = after.mate(me)
+    if before.mate(me) is not None or after_mate is None or after_mate >= 0:
+        return None
+    cp = before.cp(me)
+    if cp < -999:
+        return None
+    return "mistake" if cp < -700 else "blunder"
+
+
+SEVERITIES = [None, "mistake", "blunder"]
+
+
 def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder: float) -> list[Flag]:
     board = game.board()
     flags = []
@@ -161,7 +184,9 @@ def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder
         if board.turn == me:
             before, after = evals[ply], evals[ply + 1]
             drop = win_percent(before.cp(me)) - win_percent(after.cp(me))
-            if drop >= mistake:
+            by_drop = "blunder" if drop >= blunder else "mistake" if drop >= mistake else None
+            severity = max(by_drop, mate_severity(before, after, me), key=SEVERITIES.index)
+            if severity:
                 after_board = board.copy()
                 after_board.push(move)
                 best = before.pv[0] if before.pv else move
@@ -170,7 +195,7 @@ def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder
                 flags.append(Flag(
                     ply=ply,
                     move_label=move_label(board, move),
-                    severity="blunder" if drop >= blunder else "mistake",
+                    severity=severity,
                     kind=kind,
                     mate_in=mate_in,
                     material=points,
@@ -220,10 +245,17 @@ def add_safe_counts(game, me: chess.Color, moments: list[Flag], engine: chess.en
         if ply in wanted:
             legal = board.legal_moves.count()
             infos = engine.analyse(board, chess.engine.Limit(depth=depth), multipv=legal)
-            scores = [win_percent(i["score"].pov(me).score(mate_score=100_000)) for i in infos]
-            best = max(scores)
-            wanted[ply].safe = (sum(1 for s in scores if best - s < mistake), legal)
+            wanted[ply].safe = (count_safe([i["score"].pov(me) for i in infos], mistake), legal)
         board.push(node.move)
+
+
+def count_safe(scores: list[chess.engine.Score], mistake: float) -> int:
+    """Moves within the mistake threshold of the best one, not counting walks into an avoidable mate."""
+    percents = [win_percent(s.score(mate_score=100_000)) for s in scores]
+    best = max(percents)
+    mated = [s.mate() is not None and s.mate() < 0 for s in scores]
+    avoidable = not all(mated)
+    return sum(1 for p, m in zip(percents, mated) if best - p < mistake and not (m and avoidable))
 
 
 def mark_first_material_loss(moments: list[Flag]) -> None:
