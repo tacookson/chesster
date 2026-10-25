@@ -145,6 +145,22 @@ Answer, on my Mac:
 - Before building, tighten the rules in survey gaps 5 and 6: numeric definitions of "rare", the 2000–2600 gap, multiple crossings, and which Maia rating counts as "me" (my Chess.com rating is now 773–816, not ~700).
 - Optional: estimate how likely an opponent at my level was to find the punishing reply.
 
+### Deferred: a rating-scale difficulty score
+
+Considered October 25, 2026 and set aside. The manual crossover on maiachess.com already answers "how hard was this?", and any score would be accurate only to a few hundred points, worst near my band (`docs/07`). Revisit if reading the crossover often goes over its 2–3 minutes or keeps giving no clear answer, or if M1 is a go.
+
+Score the two questions separately:
+
+- **Position difficulty (50% rating).** Sum Maia's probabilities over the safe moves (the slice 2 definition) at each rating. Report the rating where that sum crosses 50%, in bands, with "unclear" allowed. This is more robust than the two-line crossover and could replace it for N / L / X / R.
+- **Temptation.** P(my move) at my rating, and the rating where it falls below about 10%.
+
+Ideas that need no local Maia:
+
+- **Lichess explorer by rating bucket.** Who actually plays my move in early positions (roughly moves 1–15). It covers the moves Maia skips. Check the current API and auth rules first.
+- **Puzzle-theme median rating.** Median rating of Lichess puzzles with the missed idea's theme. Coarse.
+
+Never show a single precise number. Difficulty is engine output, so it stays inside the fold.
+
 ## Rules to confirm
 
 Defaults chesster ships with. All live in `chesster.toml` so they can change without code changes.
