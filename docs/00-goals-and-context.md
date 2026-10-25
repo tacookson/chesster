@@ -28,7 +28,8 @@
 - The repo does two things: (1) identifies mistakes and blunders by engine, used alongside the open notebook during review; (2) archives the games I've played for later reference.
 - The repo does not store notebook data.
 - **Shape: a companion to maiachess.com.** chesster fetches Chess.com games, archives them, runs Stockfish to list each game's flagged moves, and hands over the PGN to paste into maiachess.com. Positions are studied on maiachess.com with the notebook open. A standalone tool with its own board and local Maia-3 is deferred until pasting into Maia proves to be real friction.
-- **Input:** one game at a time, triggered manually right after the game.
+- **Runs on:** my laptop (macOS), triggered manually. Not GitHub Actions.
+- **Input:** triggered manually when I sit down to review, which may be after several games.
 - **Output:** a markdown file per game, which is also its archive entry.
 - **Archive scope:** new games from October 2026 onward; no backfill.
 
