@@ -2,7 +2,7 @@
 
 A repo that helps me analyze my own chess games. It captures my goals, the review method I've settled on, how I use engines (Stockfish via Chess.com, and Maia), and the research behind those choices.
 
-The knowledge base below was compiled October 25, 2026, from a research and planning conversation. No tooling exists yet; see `PROJECT_BRIEF.md` for candidate features and open questions.
+The knowledge base below was compiled October 25, 2026, from a research and planning conversation. chesster is now built: it fetches my Chess.com games, flags big swings with Stockfish, and writes one markdown file per game. See "Using chesster" below and `docs/06-build-plan.md`.
 
 ## Using chesster
 

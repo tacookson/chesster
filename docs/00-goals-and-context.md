@@ -6,7 +6,7 @@
 | --- | --- |
 | Platform | Chess.com |
 | Time control | Rapid, 15+10 |
-| Rating | About 700 Chess.com rapid (roughly 1000–1200 on the Lichess scale) |
+| Rating | 773–816 Chess.com rapid (October 2026). Lichess equivalent roughly 1000–1200, based on ~700; needs re-deriving (Q5) |
 | Volume | 5–7 games a week |
 | Review time budget | 10–20 minutes per game |
 | Note-taking | Physical paper notebook |
