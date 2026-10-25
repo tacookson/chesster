@@ -74,7 +74,7 @@ def test_find_flags_uses_my_point_of_view_and_thresholds():
              _eval(-800, ["e8f7"]), _eval(-800)]
     white = analyse.find_flags(game, chess.WHITE, evals, mistake=20, blunder=30)
     assert [(f.move_label, f.severity) for f in white] == [("3. Qxf7+", "blunder")]
-    assert white[0].before == "+0.0" and white[0].after == "−8.0"
+    assert white[0].before == "0.0" and white[0].after == "−8.0"
     assert white[0].punished_by == "3... Kxf7"
     assert analyse.find_flags(game, chess.BLACK, evals, mistake=20, blunder=30) == []
 
