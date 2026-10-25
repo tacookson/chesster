@@ -7,7 +7,7 @@ Written October 25, 2026.
 ## What chesster does
 
 1. Fetches my Chess.com games and finds rapid games with no archive file yet.
-2. Runs Stockfish on each new game and flags my moves that cost 20+ points of winning chances.
+2. Runs Stockfish on each new game and flags my moves that cost 15+ points of winning chances.
 3. Writes one markdown file per game: header, flagged moves with labels, engine answers folded away, and the PGN to paste into maiachess.com.
 
 I read the file in VS Code's Markdown preview, study the flagged positions on maiachess.com, and write insights in my notebook.
@@ -167,7 +167,7 @@ Defaults chesster ships with. All live in `chesster.toml` so they can change wit
 
 | Rule | Default | Why / open point |
 | --- | --- | --- |
-| Mistake threshold | 20-point drop in winning chances | ≈ Studer's 2-point rule from a level position (0 → −2.3) |
+| Mistake threshold | 15-point drop in winning chances | Lowered from 20 on Oct 25: 20 matched Studer's 2-point rule only from equality and missed 2-pawn swings from slightly worse (−1.3 → −3.5 = 16.7 points). Lichess's blunder line. On the 16 October games: 32 → 39 flags. Also the safe-move cut-off |
 | Blunder threshold | 30-point drop | About 2× Lichess (whose bars are 5 / 10 / 15 Win% points); close to Chess.com's Expected Points bands. See `docs/07` |
 | Walking into mate | Blunder; mistake if I was already below −7; hidden below −10 | Lichess's rule (lila `Advice.scala`). Win% barely moves in a lost position, so without it a mate-in-1 allowed at −7.5 went unflagged. Moves that walk into an avoidable mate don't count as safe |
 | Inaccuracies | Hidden | Non-negotiable |
