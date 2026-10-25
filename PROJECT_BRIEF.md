@@ -46,7 +46,7 @@ Help me (a ~700 Chess.com rapid player) analyze my own games using the review me
 ## Open questions for me
 
 1. What form should the repo take: a command-line script, a notebook, a small web page, something else?
-2. Should it store my notebook data (tags, lessons), or only prepare and summarize games?
+2. ~~Should it store my notebook data (tags, lessons), or only prepare and summarize games?~~ **Decided:** no notebook data. The repo finds engine mistakes/blunders and archives games; all tracking stays on paper (see `docs/00-goals-and-context.md`).
 3. Run engines locally (Stockfish binary, Maia-3 model files) or rely on websites (Chess.com, Lichess, maiachess.com)?
 4. Printed sheets vs a screen view for the per-game prep?
 5. Which Maia rating to treat as "my level" (default 1100) and whether to recalibrate as my rating changes.

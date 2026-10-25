@@ -22,6 +22,12 @@
 
 ## Decisions made
 
+**Repo role** (decided October 25, 2026)
+
+- The notebook is the only place insights and tracking live: tags, ✓/✗, Maia classes, lessons and weekly tallies stay on paper.
+- The repo does two things: (1) identifies mistakes and blunders by engine, used alongside the open notebook during review; (2) archives the games I've played for later reference.
+- The repo does not store notebook data.
+
 **Review method**
 
 - Four steps per game, about 15 minutes: hot notes (2 min) → my own review, engine off (5–7 min) → engine check (4–6 min) → one lesson plus tally (2 min).

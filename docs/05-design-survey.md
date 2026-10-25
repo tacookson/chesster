@@ -27,7 +27,7 @@ The process is well specified and the tooling is constrained, but there is no to
 
 ### A. Conflicts between principles (need a decision)
 
-1. **Paper-first vs pattern tracking.** Principle 6 keeps paper primary; principle 4 says the value is in weekly tallies and trends. Any summary feature (weekly tally, ✓/✗ ratio, N vs R counts, monthly loss audit) needs notebook data in the repo, and nothing says how it gets there: re-type, quick capture (e.g. one line per moment, `14 H ✓ R`), photograph, or don't track in the repo. This is open question #2 and the decision most others depend on.
+1. **Resolved (Oct 25):** the notebook holds all insights and tracking; the repo finds engine mistakes/blunders and archives games, and stores no notebook data. Weekly/monthly summary features drop out. Original framing: **Paper-first vs pattern tracking.** Principle 6 keeps paper primary; principle 4 says the value is in weekly tallies and trends. Any summary feature (weekly tally, ✓/✗ ratio, N vs R counts, monthly loss audit) needs notebook data in the repo, and nothing says how it gets there: re-type, quick capture (e.g. one line per moment, `14 H ✓ R`), photograph, or don't track in the repo. This is open question #2 and the decision most others depend on.
 
 2. **"Swing" has three definitions that disagree.** "2+ points", "changed the likely result" and "Lichess winning-chance drops" are treated as one rule. Using the Lichess win-percentage formula (constant 0.00368208):
 
