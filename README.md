@@ -21,6 +21,7 @@ The knowledge base below was compiled October 25, 2026, from a research and plan
 | `docs/03-maia-guide.md` | Deep dive on Maia: models, features, how people use it, limitations, my weekly Maia plan |
 | `docs/04-research-notes.md` | Key research findings, thresholds and caveats, with sources |
 | `docs/05-design-survey.md` | Survey of the current design, its inputs, and gaps to close before building tooling |
+| `docs/06-build-plan.md` | Build plan: slices, Maia spike, file format, and rule defaults |
 | `docs/assets/chesscom-analysis-board-example.png` | Screenshot of the Chess.com Analysis board used as the worked example |
 | `templates/game-entry.md` | Per-game notebook entry |
 | `templates/weekly-page.md` | Weekly tally page |
