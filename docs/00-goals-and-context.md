@@ -30,6 +30,8 @@
 - **Shape: a companion to maiachess.com.** chesster fetches Chess.com games, archives them, runs Stockfish to list each game's flagged moves, and hands over the PGN to paste into maiachess.com. Positions are studied on maiachess.com with the notebook open. A standalone tool with its own board and local Maia-3 is deferred until pasting into Maia proves to be real friction.
 - **Runs on:** my laptop (macOS), triggered manually. Not GitHub Actions.
 - **Input:** triggered manually when I sit down to review, which may be after several games.
+- **Which games:** every rapid game not already archived (the archive is the record of what's done), with an option to re-run one game by URL. Rapid only by default; an option to include other time controls.
+- **Chess.com username:** Me4tbegZ0r (lowercase in API paths: `me4tbegz0r`).
 - **Output:** a markdown file per game, which is also its archive entry.
 - **Archive scope:** new games from October 2026 onward; no backfill.
 
