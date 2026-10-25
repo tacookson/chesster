@@ -33,7 +33,7 @@
 - **Which games:** every rapid game not already archived (the archive is the record of what's done), with an option to re-run one game by URL. Rapid only by default; an option to include other time controls.
 - **Chess.com username:** Me4tbegZ0r (lowercase in API paths: `me4tbegz0r`).
 - **Output:** a markdown file per game, which is also its archive entry.
-- **Archive scope:** new games from October 2026 onward; no backfill.
+- **Archive scope:** my entire Chess.com history (the account's archive starts October 2026).
 
 **Review method**
 
