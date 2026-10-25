@@ -93,6 +93,24 @@ Stockfish 16, depth 16, flag = my winning chances dropped 20+ points (Lichess fo
 - One missed idea was flagged on three consecutive moves; such runs should merge into one moment.
 - Categories are crude material counts over one month of games.
 
+## Evidence: safe-move count on the October flags
+
+Stockfish 16, depth 12, MultiPV over every legal move in each of the 31 flagged positions; "safe" = within 20 Win% points of the best move. 35 seconds total.
+
+| Flag type | Safe moves per position |
+| --- | --- |
+| Missed free material | 1, 1, 2, 2, 2, 2, 2, 3, 5, 9 |
+| Missed mate | 1, 1, 2, 2, 3 |
+| Lost material | 1, 2, 4, 5, 5, 5, 18, 22, 35 |
+| Other ("deeper") | 2, 4, 5, 10, 11, 14, 19 |
+
+- Unlike search depth, the count separates flags (range 1–35).
+- On missed chances it misleads: only the punishing move keeps the advantage, so the count is always low even when the answer (take the free piece) is easy.
+- On flags where I lost ground it is informative: 11...Bxf3 had 35 of 48 safe moves (careless), 15.Bd3 had 1 of 37 (tight).
+- 15...Rab8, labelled "deeper", had 19 of 36 safe moves, so "deeper" doesn't mean hard to avoid.
+- **Decision (Oct 25):** include the count in slice 2 for lost-ground flags only, inside the fold.
+- Caveats: one month, depth 12 vs depth 16 for the flags, threshold-dependent.
+
 ## Dependencies
 
 Gap 1 decides what can be tracked, which bounds gaps 3, 4 and 11. Gaps 2, 5, 7 and 8 are rule-tightening that needs no code. Gap 13 is validation work that can run in parallel.

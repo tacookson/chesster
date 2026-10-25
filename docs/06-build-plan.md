@@ -110,7 +110,8 @@ The header matches the notebook entry's header (date, colour, result, opponent, 
 - Missed chances need no special case: if the opponent hung a piece, my winning chances before my move are already high, so not taking it shows as a drop.
 - Label each flag by type: **material** (I lose material within 2 moves, or the best move wins 2+ within 3), **mate** (a mate in 1–2 was available or allowed), **deeper** (anything else).
 - Merge consecutive flags for the same missed idea into one moment.
-- Render labels on top and engine answers in `<details>`.
+- **Safe-move count** on flags where I lost ground (types **material**-lost and **deeper**): score every legal move with MultiPV and count those within the mistake threshold of the best move, e.g. "35 of 48 moves held". Not shown on missed chances, where only the punishing move is "safe" and the count reads as hard when it usually isn't. Shown inside the fold, since it hints at the answer. Evidence: `docs/05-design-survey.md`.
+- Render labels on top and engine answers (best move, punishing reply, eval change, safe-move count) in `<details>`.
 - **Done when:** the October games reproduce the evidence in `docs/05-design-survey.md` (31 flags before merging, at depth 16), and the folds collapse in VS Code's preview.
 
 ### Slice 3: Clock and polish
@@ -124,19 +125,22 @@ The header matches the notebook entry's header (date, colour, result, opponent, 
 
 ### M1: Spike
 
+Test **Maia-2 first**: it is trained on Lichess rapid (closer to 15+10 than Maia-3's blitz), has a (0, 1000] rating band, and maiachess.com's Platform v1 was built on it. Fall back to Maia-3 only if Maia-2 fails. See `docs/07-mistake-classification-research.md`.
+
 Answer, on my Mac:
 
-1. Does Maia-3 install and run from the CSSLab/maia3 repo?
-2. What inputs does it take (my rating, opponent's rating, both)?
-3. Does it return a probability for every legal move, including a move it wouldn't pick?
-4. How long does a sweep from 600 to 2600 (step 100) take for one position?
-5. Licence: AGPLv3. Fine for local personal use; check before vendoring any Maia code into this repo.
+1. Which model does maiachess.com run today? chesster's classes should come from the same model as the Moves by Rating graph I look at.
+2. Does Maia-2 install and run locally? Packaging, licence, Python version.
+3. What inputs does it take? Fix the opponent's rating explicitly: it changes the predicted move in up to 6% of positions.
+4. Does it return a probability for every legal move, including a move it wouldn't pick?
+5. How long does a sweep across its rating bands take for one position, and for the 31 October flags?
+6. Only if Maia-2 fails: repeat 2–5 for Maia-3 (CSSLab/maia3, AGPLv3; fine for local personal use, check before vendoring code).
 
 **Output:** a go / no-go note in `docs/`, with timings.
 
 ### M2: Classification (only if M1 is a go)
 
-- For each flag, sweep Maia for my move and Stockfish's best move; find the crossover; label N / L / X / R.
+- For each flag, sweep Maia for my move and Stockfish's best move; find the crossover; label N / L / X / R. Report in coarse bands with a minimum probability gap, and give explicit outcomes for "no crossover" and "multiple crossovers" (Maia-2's predictions move consistently with rating in only ~27% of positions).
 - Before building, tighten the rules in survey gaps 5 and 6: numeric definitions of "rare", the 2000–2600 gap, multiple crossings, and which Maia rating counts as "me" (my Chess.com rating is now 773–816, not ~700).
 - Optional: estimate how likely an opponent at my level was to find the punishing reply.
 
