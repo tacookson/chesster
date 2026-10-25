@@ -113,13 +113,14 @@ The header matches the notebook entry's header (date, colour, result, opponent, 
 - Merge consecutive flags for the same missed idea into one moment.
 - **Safe-move count** on flags where I lost ground (types **material**-lost and **deeper**): score every legal move with MultiPV and count those within the mistake threshold of the best move, e.g. "35 of 48 moves held". Not shown on missed chances, where only the punishing move is "safe" and the count reads as hard when it usually isn't. Shown inside the fold, since it hints at the answer. Evidence: `docs/05-design-survey.md`.
 - Render labels on top and engine answers (best move, punishing reply, eval change, safe-move count) in `<details>`.
-- **Done when:** the October games reproduce the evidence in `docs/05-design-survey.md` (31 flags before merging, at depth 16), and the folds collapse in VS Code's preview.
+- **Done when:** the 16 October games give about 43 flags before merging and 40 moments after (Stockfish 16, depth 16, 15-point bar, Oct 25; a newer Stockfish may differ by a few), and the folds collapse in VS Code's preview. The original 31 in `docs/05-design-survey.md` was at the old 20-point bar. **Done on my Mac, Oct 25.**
 
 ### Slice 3: Clock and polish
 
 - Show time spent on each flagged move (previous clock − current clock + 10 s increment). Supports question bank Q8 and the C tag, and reveals nothing about the answer.
 - Option `--all-time-controls` to include blitz, daily and unrated games.
 - Progress output while Stockfish runs (Nothing silent).
+- **Built Oct 25:** time spent and clock left show under each flag's headline, outside the fold (for merged moments, one time per move; none for daily games). Progress shows the game, the stage and the position count.
 - **Done when:** I've used chesster for a week of real reviews and logged any friction.
 
 ## Maia track (in parallel)

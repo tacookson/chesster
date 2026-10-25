@@ -1,6 +1,7 @@
 """Stockfish evaluation of my moves: flags, type labels, merging and safe-move counts."""
 
 import math
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 import chess
@@ -68,6 +69,7 @@ class Flag:
     safe: tuple[int, int] | None = None  # (safe moves, legal moves), lost-ground flags only
     mate_in: int | None = None  # moves to mate, for missed or allowed mate
     merged: list[str] = field(default_factory=list)  # later moves merged into this moment
+    clocks: list[tuple[float, float]] = field(default_factory=list)  # (seconds spent, seconds left) per move
     first_material_loss: bool = False
 
 
@@ -146,15 +148,25 @@ def classify(before_board: chess.Board, after_board: chess.Board, before: Eval, 
     return DEEPER, None, 0
 
 
-def evaluate_game(game, me: chess.Color, engine: chess.engine.SimpleEngine, depth: int) -> list[Eval]:
+Progress = Callable[[str, int, int], None]  # (stage, done, total)
+
+
+def _quiet(stage: str, done: int, total: int) -> None:
+    pass
+
+
+def evaluate_game(game, me: chess.Color, engine: chess.engine.SimpleEngine, depth: int,
+                  progress: Progress = _quiet) -> list[Eval]:
     """Evaluate every position in the mainline once (N moves → N+1 evals)."""
     board = game.board()
+    nodes = [None, *game.mainline()]
     evals = []
-    for node in [None, *game.mainline()]:
+    for n, node in enumerate(nodes, 1):
         if node is not None:
             board.push(node.move)
         info = engine.analyse(board, chess.engine.Limit(depth=depth))
         evals.append(Eval(info["score"], info.get("pv", [])))
+        progress("positions", n, len(nodes))
     return evals
 
 
@@ -237,15 +249,18 @@ def merge(flags: list[Flag]) -> list[Flag]:
 
 
 def add_safe_counts(game, me: chess.Color, moments: list[Flag], engine: chess.engine.SimpleEngine,
-                    depth: int, mistake: float) -> None:
+                    depth: int, mistake: float, progress: Progress = _quiet) -> None:
     """Count legal moves within the mistake threshold of the best move, for lost-ground flags."""
     wanted = {m.ply: m for m in moments if m.kind in LOST_GROUND}
     board = game.board()
+    done = 0
     for ply, node in enumerate(game.mainline()):
         if ply in wanted:
             legal = board.legal_moves.count()
             infos = engine.analyse(board, chess.engine.Limit(depth=depth), multipv=legal)
             wanted[ply].safe = (count_safe([i["score"].pov(me) for i in infos], mistake), legal)
+            done += 1
+            progress("safe-move counts", done, len(wanted))
         board.push(node.move)
 
 
@@ -258,6 +273,36 @@ def count_safe(scores: list[chess.engine.Score], mistake: float) -> int:
     return sum(1 for p, m in zip(percents, mated) if best - p < mistake and not (m and avoidable))
 
 
+def time_spent(game, me: chess.Color) -> dict[int, tuple[float, float]]:
+    """(seconds spent, seconds left) for each of my moves, by ply, from the PGN's %clk comments.
+
+    Spent = my clock before the move − my clock after + the increment. Empty without a
+    base+increment time control (daily games) or clock comments.
+    """
+    base, _, increment = game.headers.get("TimeControl", "").partition("+")
+    if not base.isdigit():
+        return {}
+    before, bonus = float(base), float(increment or 0)
+    board = game.board()
+    times = {}
+    for ply, node in enumerate(game.mainline()):
+        if board.turn == me:
+            left = node.clock()
+            if left is None:
+                return {}
+            times[ply] = (max(0.0, before - left + bonus), left)
+            before = left
+        board.push(node.move)
+    return times
+
+
+def add_clocks(game, me: chess.Color, moments: list[Flag]) -> None:
+    times = time_spent(game, me)
+    for moment in moments:
+        plies = [moment.ply + 2 * n for n in range(len(moment.merged) + 1)]
+        moment.clocks = [times[p] for p in plies if p in times]
+
+
 def mark_first_material_loss(moments: list[Flag]) -> None:
     for moment in moments:
         if moment.kind == LOST_MATERIAL:
@@ -266,10 +311,11 @@ def mark_first_material_loss(moments: list[Flag]) -> None:
 
 
 def analyse(game, me: chess.Color, engine: chess.engine.SimpleEngine, depth: int, safe_depth: int,
-            mistake: float, blunder: float, lost: bool) -> list[Flag]:
-    evals = evaluate_game(game, me, engine, depth)
+            mistake: float, blunder: float, lost: bool, progress: Progress = _quiet) -> list[Flag]:
+    evals = evaluate_game(game, me, engine, depth, progress)
     moments = merge(find_flags(game, me, evals, mistake, blunder))
-    add_safe_counts(game, me, moments, engine, safe_depth, mistake)
+    add_safe_counts(game, me, moments, engine, safe_depth, mistake, progress)
+    add_clocks(game, me, moments)
     if lost:
         mark_first_material_loss(moments)
     return moments

@@ -41,3 +41,13 @@ def test_merged_moment_lists_every_move():
     text = render._moment(flag, "Black")
     assert "### Moves 15–17 as Black: you played Rab8, a5, Rb5" in text
     assert "The same idea was missed on 3 moves in a row." in text
+
+
+def test_moment_shows_time_outside_the_fold():
+    text = render._moment(_flag(clocks=[(4.0, 192.0)]), "White")
+    assert text.index("Time: 4s on this move, 3:12 left.") < text.index("<details>")
+
+
+def test_merged_moment_lists_time_per_move():
+    flag = _flag(merged=["16. Be2"], clocks=[(4.0, 192.0), (75.0, 127.0)])
+    assert "Time: 4s and 1m 15s on these moves, 2:07 left after the last." in render._moment(flag, "White")

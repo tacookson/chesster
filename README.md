@@ -19,6 +19,7 @@ From the repo root:
 uv run chesster                 # fetch new rapid games, flag big swings, write games/YYYY-MM/*.md
 uv run chesster --game <url>    # re-process one game (overwrites its file)
 uv run chesster --no-engine     # archive only, skip Stockfish
+uv run chesster --all-time-controls   # also blitz, bullet and daily games
 uv run --group dev pytest       # run tests
 ```
 

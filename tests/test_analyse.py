@@ -129,3 +129,28 @@ def test_captured_names_the_piece():
     board = chess.Board("4k3/8/8/3n4/4P3/8/8/4K3 w - - 0 1")
     assert analyse.captured(board, chess.Move.from_uci("e4d5")) == "knight"
     assert analyse.captured(board, chess.Move.from_uci("e1e2")) == ""
+
+
+CLOCK_PGN = """[TimeControl "900+10"]
+
+1. e4 {[%clk 0:15:05]} e5 {[%clk 0:15:08]} 2. Nf3 {[%clk 0:14:20]} Nc6 {[%clk 0:15:10]} *"""
+
+
+def test_time_spent_adds_the_increment():
+    game = chess.pgn.read_game(io.StringIO(CLOCK_PGN))
+    # 1. e4: 900 − 905 + 10 = 5s; 2. Nf3: 905 − 860 + 10 = 55s.
+    assert analyse.time_spent(game, chess.WHITE) == {0: (5.0, 905.0), 2: (55.0, 860.0)}
+    assert analyse.time_spent(game, chess.BLACK) == {1: (2.0, 908.0), 3: (8.0, 910.0)}
+
+
+def test_time_spent_is_empty_without_a_clock_time_control():
+    game = chess.pgn.read_game(io.StringIO(CLOCK_PGN.replace("900+10", "1/259200")))
+    assert analyse.time_spent(game, chess.WHITE) == {}
+
+
+def test_add_clocks_covers_every_merged_move():
+    game = chess.pgn.read_game(io.StringIO(CLOCK_PGN))
+    moment = _flag(0)
+    moment.merged = ["2. Nf3"]
+    analyse.add_clocks(game, chess.WHITE, [moment])
+    assert moment.clocks == [(5.0, 905.0), (55.0, 860.0)]
