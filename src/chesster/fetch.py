@@ -1,0 +1,39 @@
+"""Chess.com published-data API: monthly game archives, no auth."""
+
+import json
+import urllib.request
+
+API = "https://api.chess.com/pub/player/{user}/games/archives"
+USER_AGENT = "chesster (personal game review tool; github.com/tacookson/chesster)"
+
+
+def _get(url: str) -> dict:
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.load(response)
+
+
+def archive_urls(username: str) -> list[str]:
+    return _get(API.format(user=username.lower()))["archives"]
+
+
+def games(username: str, time_classes: tuple[str, ...]):
+    """Yield every game in the player's archives with a matching time class, oldest first."""
+    for url in archive_urls(username):
+        for game in _get(url).get("games", []):
+            if game.get("time_class") in time_classes and game.get("rules") == "chess":
+                yield game
+
+
+def game_id(game: dict) -> str:
+    return game["url"].rstrip("/").rsplit("/", 1)[1]
+
+
+def find_game(username: str, url: str) -> dict:
+    """Find one game by its URL. There is no single-game endpoint, so search the archives."""
+    wanted = url.rstrip("/").rsplit("/", 1)[1]
+    for archive in reversed(archive_urls(username)):
+        for game in _get(archive).get("games", []):
+            if game_id(game) == wanted:
+                return game
+    raise LookupError(f"Game {url} not found in {username}'s archives")

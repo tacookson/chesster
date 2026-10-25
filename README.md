@@ -4,6 +4,26 @@ A repo that helps me analyze my own chess games. It captures my goals, the revie
 
 The knowledge base below was compiled October 25, 2026, from a research and planning conversation. No tooling exists yet; see `PROJECT_BRIEF.md` for candidate features and open questions.
 
+## Using chesster
+
+One-time setup on macOS:
+
+```sh
+brew install stockfish
+uv sync
+```
+
+From the repo root:
+
+```sh
+uv run chesster                 # fetch new rapid games, flag big swings, write games/YYYY-MM/*.md
+uv run chesster --game <url>    # re-process one game (overwrites its file)
+uv run chesster --no-engine     # archive only, skip Stockfish
+uv run --group dev pytest       # run tests
+```
+
+Settings (username, thresholds, engine depth, Stockfish path) live in `chesster.toml`. Each game file has the header, flagged moves with their type, the engine answer folded under each move, and the PGN to paste into maiachess.com. Open it in VS Code's Markdown preview (Cmd+Shift+V) so the answers stay folded.
+
 ## Who this is for
 
 - **Me:** a reference for the review routine and notebook format.
@@ -20,6 +40,9 @@ The knowledge base below was compiled October 25, 2026, from a research and plan
 | `docs/02-maia-mistake-classification.md` | The crossover method: sorting each mistake into N / L / X / R using Maia |
 | `docs/03-maia-guide.md` | Deep dive on Maia: models, features, how people use it, limitations, my weekly Maia plan |
 | `docs/04-research-notes.md` | Key research findings, thresholds and caveats, with sources |
+| `docs/05-design-survey.md` | Survey of the current design, its inputs, and gaps to close before building tooling |
+| `docs/06-build-plan.md` | Build plan: slices, Maia spike, file format, and rule defaults |
+| `docs/07-mistake-classification-research.md` | Research: severity, difficulty and cause frameworks for classifying mistakes, and what they mean for chesster |
 | `docs/assets/chesscom-analysis-board-example.png` | Screenshot of the Chess.com Analysis board used as the worked example |
 | `templates/game-entry.md` | Per-game notebook entry |
 | `templates/weekly-page.md` | Weekly tally page |

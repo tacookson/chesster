@@ -22,6 +22,24 @@
 
 ## Decisions made
 
+**Repo role** (decided October 25, 2026)
+
+- The notebook is the only place insights and tracking live: tags, ✓/✗, Maia classes, lessons and weekly tallies stay on paper.
+- The repo does two things: (1) identifies mistakes and blunders by engine, used alongside the open notebook during review; (2) archives the games I've played for later reference.
+- The repo does not store notebook data.
+- **Shape: a companion to maiachess.com.** chesster fetches Chess.com games, archives them, runs Stockfish to list each game's flagged moves, and hands over the PGN to paste into maiachess.com. Positions are studied on maiachess.com with the notebook open. A standalone tool with its own board and local Maia-3 is deferred until pasting into Maia proves to be real friction.
+- **Runs on:** my laptop (macOS), triggered manually. Not GitHub Actions.
+- **Input:** triggered manually when I sit down to review, which may be after several games.
+- **Which games:** every rapid game not already archived (the archive is the record of what's done), with an option to re-run one game by URL. Rapid only by default; an option to include other time controls.
+- **Chess.com username:** Me4tbegZ0r (lowercase in API paths: `me4tbegz0r`).
+- **How errors are identified:** Stockfish flags moves by drop in my winning chances. Stockfish alone can't tell whether an error is human-findable at my level, so:
+  1. **Baseline (build now):** each flag gets a simple type label (material, mate in ≤2, deeper). Nothing hidden. Consecutive flags for the same missed idea merge into one moment.
+  2. **Spike in parallel:** test Maia-3 locally on macOS (inputs, move probabilities across ratings, speed, licence).
+  3. **If the spike works:** chesster classifies each flag N / L / X / R automatically (the crossover method), and can also estimate whether an opponent at my level would have punished it. maiachess.com stays the board either way.
+- **Output:** a markdown file per game, which is also its archive entry.
+- **Viewing and reveal:** files are read in VS Code's Markdown preview. Each flag shows its label up top; the engine answer (best move, punishing reply, eval change) sits in a collapsed `<details>` block underneath. To verify: `<details>` folds in VS Code's built-in preview (the Cursor forum reports it does in the dedicated preview).
+- **Archive scope:** my entire Chess.com history (the account's archive starts October 2026).
+
 **Review method**
 
 - Four steps per game, about 15 minutes: hot notes (2 min) → my own review, engine off (5–7 min) → engine check (4–6 min) → one lesson plus tally (2 min).
