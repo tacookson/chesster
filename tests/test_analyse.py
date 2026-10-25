@@ -85,6 +85,31 @@ def test_small_drops_are_not_flagged():
     assert analyse.find_flags(game, chess.WHITE, evals, mistake=20, blunder=30) == []
 
 
+def _mate(n):
+    return analyse.Eval(chess.engine.PovScore(chess.engine.Mate(n), chess.WHITE), [])
+
+
+@pytest.mark.parametrize("before_cp, severity", [(-300, "blunder"), (-750, "mistake"), (-1200, None)])
+def test_walking_into_mate_follows_lichess_grading(before_cp, severity):
+    # Win% barely moves from a lost position, so the mate rule decides the label.
+    game = chess.pgn.read_game(io.StringIO("1. e4 e5 *"))
+    evals = [_eval(before_cp), _mate(-1), _mate(-1)]
+    flags = analyse.find_flags(game, chess.WHITE, evals, mistake=20, blunder=30)
+    assert [f.severity for f in flags] == ([severity] if severity else [])
+
+
+def test_mate_rule_ignores_a_mate_already_on_the_board():
+    assert analyse.mate_severity(_mate(-3), _mate(-1), chess.WHITE) is None
+
+
+def test_count_safe_excludes_avoidable_mates():
+    Cp, Mate = chess.engine.Cp, chess.engine.Mate
+    # Lost position: every move is within 20 Win% points, but one walks into mate.
+    assert analyse.count_safe([Cp(-750), Cp(-800), Mate(-1)], mistake=20) == 2
+    assert analyse.count_safe([Mate(-3), Mate(-1)], mistake=20) == 2
+    assert analyse.count_safe([Cp(0), Cp(-50), Cp(-400)], mistake=20) == 2
+
+
 def test_line_formats_black_moves_with_a_space_after_dots():
     board = chess.Board()
     board.push_san("e4")

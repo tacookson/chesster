@@ -169,6 +169,7 @@ Defaults chesster ships with. All live in `chesster.toml` so they can change wit
 | --- | --- | --- |
 | Mistake threshold | 20-point drop in winning chances | ≈ Studer's 2-point rule from a level position (0 → −2.3) |
 | Blunder threshold | 30-point drop | About 2× Lichess (whose bars are 5 / 10 / 15 Win% points); close to Chess.com's Expected Points bands. See `docs/07` |
+| Walking into mate | Blunder; mistake if I was already below −7; hidden below −10 | Lichess's rule (lila `Advice.scala`). Win% barely moves in a lost position, so without it a mate-in-1 allowed at −7.5 went unflagged. Moves that walk into an avoidable mate don't count as safe |
 | Inaccuracies | Hidden | Non-negotiable |
 | Engine depth | 16 | 16 games took about 2 minutes in the experiment; raise if the Mac is fast |
 | Skip opening moves | None for Stockfish flags | The experiment skipped moves 1–5; a hung piece on move 4 still matters. The 5-move skip stays for Maia only |
