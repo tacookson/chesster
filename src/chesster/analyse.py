@@ -108,9 +108,13 @@ def line(board: chess.Board, pv: list[chess.Move], plies: int) -> str:
 
 
 def _material_after(board: chess.Board, pv: list[chess.Move], plies: int, colour: chess.Color) -> int:
+    """Material after the first `plies` of a line, played on until the captures stop.
+
+    Running past the captures keeps a trade from being cut off half-way.
+    """
     b = board.copy()
-    for move in pv[:plies]:
-        if move not in b.legal_moves:
+    for n, move in enumerate(pv):
+        if move not in b.legal_moves or (n >= plies and not b.is_capture(move)):
             break
         b.push(move)
     return material(b, colour)
@@ -130,8 +134,9 @@ def classify(before_board: chess.Board, after_board: chess.Board, before: Eval, 
     if best_mate is not None and best_mate > 0 and (after_mate is None or after_mate <= 0):
         return MISSED_MATE, best_mate, 0
     start = material(before_board, me)
-    # Opponent, me, opponent, me: did I end up 2+ points down within 2 moves?
-    lost = start - _material_after(after_board, after.pv, 4, me)
+    # Opponent, me, opponent, me, opponent, me: did I end up 2+ points down within 3 moves?
+    # Three, not two: the engine's line often grabs something else before collecting.
+    lost = start - _material_after(after_board, after.pv, 6, me)
     if lost >= 2:
         return LOST_MATERIAL, None, lost
     # Me, opponent, me, opponent, me: did the best line win 2+ points within 3 moves?

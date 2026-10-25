@@ -102,6 +102,14 @@ def test_mate_rule_ignores_a_mate_already_on_the_board():
     assert analyse.mate_severity(_mate(-3), _mate(-1), chess.WHITE) is None
 
 
+def test_material_count_plays_on_until_captures_stop():
+    # White's queen takes a defended pawn: 1. Qxd5 exd5 is a capture after the cut-off.
+    board = chess.Board("4k3/8/4p3/3p4/8/8/8/3QK3 w - - 0 1")
+    pv = [chess.Move.from_uci(m) for m in ("d1d5", "e6d5", "e1e2")]
+    assert analyse._material_after(board, pv, 1, chess.WHITE) == -1
+    assert analyse._material_after(board, pv[:1], 1, chess.WHITE) == 8
+
+
 def test_count_safe_excludes_avoidable_mates():
     Cp, Mate = chess.engine.Cp, chess.engine.Mate
     # Lost position: every move is within 20 Win% points, but one walks into mate.
