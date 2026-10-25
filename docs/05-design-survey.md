@@ -72,7 +72,9 @@ The process is well specified and the tooling is constrained, but there is no to
 
 12. **Source of truth.** The docs were exported from two living artifacts that may have been edited since. Decide whether this repo is now canonical.
 
-13. **Integration checks still to do** (local Maia-3 deferred by the companion decision, Oct 25) (validate before building): Chess.com archive endpoint, rate limits and `%clk` presence; local Maia-3 inference with a rating sweep; where the tooling runs (machine, OS, Python).
+13. **Integration checks still to do** (local Maia-3 deferred by the companion decision, Oct 25).
+    - **Verified Oct 25:** `https://api.chess.com/pub/player/{username}/games/archives` lists monthly archives; `.../games/{YYYY}/{MM}` returns games as JSON without auth. Each game has `url`, `pgn`, `time_class`, `rated`, `white`/`black`, `eco`, `end_time` and `accuracies` (to hide). The PGN carries `[%clk h:mm:ss.s]` after every move. There is no documented single-game endpoint, so a game is found within its month's archive.
+    - Original list: (validate before building): Chess.com archive endpoint, rate limits and `%clk` presence; local Maia-3 inference with a rating sweep; where the tooling runs (machine, OS, Python).
 
 ## Dependencies
 
