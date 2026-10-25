@@ -120,6 +120,7 @@ The header matches the notebook entry's header (date, colour, result, opponent, 
 - Show time spent on each flagged move (previous clock − current clock + 10 s increment). Supports question bank Q8 and the C tag, and reveals nothing about the answer.
 - Option `--all-time-controls` to include blitz, daily and unrated games.
 - Progress output while Stockfish runs (Nothing silent).
+- **Built Oct 25:** time spent and clock left show under each flag's headline, outside the fold (for merged moments, one time per move; none for daily games). Progress shows the game, the stage and the position count.
 - **Done when:** I've used chesster for a week of real reviews and logged any friction.
 
 ## Maia track (in parallel)

@@ -154,6 +154,20 @@ def _difficulty(safe: tuple[int, int]) -> str:
     return f"{count} of your {legal} legal moves kept your position. {verdict}"
 
 
+def _duration(seconds: float) -> str:
+    seconds = round(seconds)
+    return f"{seconds}s" if seconds < 60 else f"{seconds // 60}m {seconds % 60:02d}s"
+
+
+def _time(clocks: list[tuple[float, float]]) -> str:
+    """Time spent and clock left, e.g. "Time: 4s on this move, 3:12 left." (no engine information)."""
+    spent = [_duration(s) for s, _ in clocks]
+    left = _clock(clocks[-1][1])
+    if len(spent) == 1:
+        return f"Time: {spent[0]} on this move, {left} left."
+    return f"Time: {', '.join(spent[:-1])} and {spent[-1]} on these moves, {left} left after the last."
+
+
 def _moment(flag: Flag, colour: str) -> str:
     labels = [flag.move_label, *flag.merged]
     numbers = [label.split(".")[0] for label in labels]
@@ -167,6 +181,8 @@ def _moment(flag: Flag, colour: str) -> str:
         lines[-1] += f" The same idea was missed on {len(labels)} moves in a row."
     if flag.first_material_loss:
         lines[-1] += " This was the first material you lost in the game."
+    if flag.clocks:
+        lines += ["", _time(flag.clocks)]
     lines += [
         "",
         "<details>",
