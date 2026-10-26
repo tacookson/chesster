@@ -45,18 +45,18 @@ The process is well specified and the tooling is constrained, but there is no to
 
 ### B. Rules too loose to automate
 
-5. **Crossover classification** (`docs/02`).
+5. **Resolved (Oct 26):** fixed decision order R → N → L → X; R = best move already leads at my level (`docs/02`). Original framing: **Crossover classification** (`docs/02`).
    - R is defined by absolute probability ("players at my rating rarely play my move"); N, L and X by crossover position. A move can qualify for both R and N.
    - "Rare" has no number, and it defines both R and X.
    - L covers crossovers up to +800 (≈1900); X is "rare near 2000+". A crossover at 2000–2600 is neither.
    - No rule for multiple crossings or a crossover below my level.
    - On maiachess.com my move may not appear in the graph's candidate moves.
 
-6. **"My level" in Maia.** The cited converter maps 700 Chess.com rapid to ~950 Lichess *classical*; Maia models Lichess *blitz*. The 1000–1200 range (default 1100) isn't backed by its cited source, and a 100-point shift moves N/L boundaries. Recalibration is open question #5.
+6. **Resolved (Oct 26):** stay at 1100. Original framing: **"My level" in Maia.** The cited converter maps 700 Chess.com rapid to ~950 Lichess *classical*; Maia models Lichess *blitz*. The 1000–1200 range (default 1100) isn't backed by its cited source, and a 100-point shift moves N/L boundaries. Recalibration is open question #5.
 
-7. **Three notions of "the critical moment."** First material loss (in losses), "the deciding mistake" (monthly audit), and biggest drop (swing finder) can be three different moves. Tooling also needs a ranking rule when there are more than 3 swings, and material tracking (not just evals) to find the first material loss.
+7. **Resolved for the notebook (Oct 26):** keep order ★ first material lost → result-changer → engine-only flags → rest (`docs/01`). Original framing: **Three notions of "the critical moment."** First material loss (in losses), "the deciding mistake" (monthly audit), and biggest drop (swing finder) can be three different moves. Tooling also needs a ranking rule when there are more than 3 swings, and material tracking (not just evals) to find the first material loss.
 
-8. **Tag precedence.** One tag per moment, but no precedence: a piece hung in 4 seconds is H or C. Without a rule, tallies drift with mood. If the clock check auto-flags C, decide who wins when tool and human disagree.
+8. **Resolved (Oct 26):** tag the board cause; speed goes in a separate <10 s column (`docs/01`). Original framing: **Tag precedence.** One tag per moment, but no precedence: a piece hung in 4 seconds is H or C. Without a rule, tallies drift with mood. If the clock check auto-flags C, decide who wins when tool and human disagree.
 
 9. **Small undefined rules.**
    - Normalize evaluations to *my* point of view, not White's (I play both colours).

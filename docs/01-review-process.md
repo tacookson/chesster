@@ -1,13 +1,28 @@
-# Chess Game Review System
+# Chess Game Review System (v2)
 
-Review every rapid game with one fixed 15-minute routine, then tally mistakes weekly. Built for a ~700 Chess.com rapid (15+10) player, 5–7 games a week, notes in a paper notebook.
+Review every rapid game with one fixed 15-minute routine, then tally mistakes weekly. Built for a ~700–800 Chess.com rapid (15+10) player, 5–7 games a week, notes in a paper notebook. v2 (October 26, 2026) keeps v1's order, caps and tags, but chesster now finds the swings, so the engine step checks its list instead of scrubbing the eval bar.
 
-1. **Hot notes (2 min):** write what you think happened before touching any engine.
-2. **Your own review (5–7 min):** engine off. Pick up to 3 moments where material changed hands and ask three "why" questions.
-3. **Engine check (4–6 min):** Chess.com Analysis board. Guess first, then look only at swings of 2+ points.
-4. **Lesson and tally (2 min):** one "Next time I will…" rule and a tally mark per error type.
+| Step | When | Min | Look at | Write in the notebook |
+| --- | --- | --- | --- | --- |
+| 1. Hot notes | Right after the game, before the next one | 2 | Nothing but your memory | Header line 1, HOT lines |
+| 2. Own review | Review session; chesster file still closed | 6 | Chess.com game, engine hidden | Up to 3 moment rows, left half |
+| 3. chesster check | After Step 2 is written | 5 | chesster's game file + the board | Right half of each row, ✗ rows, CHK line |
+| 4. Lesson | Last | 2 | Your rows | NEXT TIME line |
 
-At 700, almost every game is decided by safety: hung pieces, missed opponent threats and missed free material. The routine is built to catch those and skip opening theory and strategy.
+At 700–800, almost every game is decided by safety: hung pieces, missed opponent threats and missed free material. The routine is built to catch those and skip opening theory and strategy.
+
+## What changed from v1
+
+| Area | v1 | v2 | Why |
+| --- | --- | --- | --- |
+| Finding swings | Tap through the Chess.com Analysis board watching the number | Read chesster's game file: every move that cut my winning chances by 20+ points, already labelled | Saves about 2 minutes and never misses one |
+| When the engine appears | Self-discipline | Don't open the game file until my own moments are written | The file's headings name the move and what happened before any fold, so opening it early spoils Step 2 |
+| ✓ / ✗ | Did I find this moment myself? | Same, judged against chesster's list | A fixed list makes ✓ objective |
+| My moments that weren't swings | Kept | Struck through, counted | Enforces the 2-point rule; the count shows calibration improving |
+| Picking 3 when there are more | Not defined | Fixed order (Rules) | Different reviews used to pick differently |
+| Tag when a blunder was also fast | H or C, by mood | Tag what I missed on the board; tick a separate <10 s column | Keeps H / M / T honest and still tracks speed |
+| Maia classes | Overlapping definitions | One decision order, every case covered | R and N could both apply; crossovers at 2000–2600 had no class |
+| Weekly page | Tally + rule + drill | Adds reviewed / played, struck rows, fast moves | Consistency is the main goal |
 
 ## What to focus on at ~700
 
@@ -27,42 +42,94 @@ Focus on safety. Below about 1200, coaches agree the biggest problems are hangin
 
 ## The process
 
-Four steps, about 15 minutes, in the same order every time. The engine always comes last, so you train your own eyes first.
+Step 1 happens right after each game. Steps 2–4 happen when I sit down to review, which can be several games later. At the start of that session, run `uv run chesster` once: it prints only file names, so it gives nothing away. Don't open the files yet.
 
-### Step 1: Hot notes (2 min)
+### Step 1: Hot notes (2 min, right after the game)
 
-Right after the game, before any analysis, fill in the header and two lines: where you think the game turned, and how you felt and used your clock. Once you've seen engine lines, you can't recover what you were actually thinking.
+No next game until these two lines exist. Once I've seen engine output I can't recover what I was thinking.
 
-### Step 2: Your own review, engine off (5–7 min)
+1. Write header line 1: game number, date, colour, result. Leave the rest of the header for Step 2.
+2. **HOT line 1:** the move where I think the game turned and what happened there.
+3. **HOT line 2:** how I felt and used the clock ("rushed after move 14", "tilted", "fine").
 
-1. Open the game in the Analysis board with the engine lines, evaluation bar and arrows turned off (see the engine section for how).
-2. Step through quickly. Stop every time material changed hands, or a check or mate threat appeared.
-3. Pick **up to 3** of these moments. In a loss, always include the **first** moment you lost material, not just the final blunder.
-4. For each moment, write one short line for each of the three "why" questions, then add an error tag:
-   - Why did I choose that move?
-   - Why was it not good?
-   - What would have been better, and why?
-5. If you can't find a moment, write "?" and let the engine find it. That still counts as a finding.
+### Step 2: Own review, chesster file closed (6 min)
 
-This is GM Noël Studer's "3×3" method (three moments, three whys each), trimmed to fit 700: *up to* three moments and only one lesson per game.
+1. Open the game on Chess.com, then the Analysis board with the evaluation bar, engine lines, suggestion arrows and move feedback hidden (see "The Chess.com Analysis board" below).
+2. Fill the rest of the header from the game page: opponent and ratings, opening, clock left for both sides.
+3. Step through. Stop every time material changes hands, a check appears, or a mate threat appears.
+4. Pick up to 3 moments using the selection order in Rules. In a loss, the first material I lost is always one of them.
+5. For each, fill the **left half** of a moment row: move number, "I played … because", "Bad because", "Better … because". Write "?" in any column I can't answer.
+6. Not sure a moment mattered? Write it anyway. Step 3 will tell me.
 
-### Step 3: Engine check (4–6 min)
+Don't tag yet and don't write ✓. Both depend on Step 3. The left-half columns are GM Noël Studer's three "why" questions (why did I choose it, why was it not good, what was better and why), trimmed to fit 700: *up to* three moments and one lesson per game.
 
-Turn the engine on and check only the big swings. The full routine is in the next section.
+### Step 3: chesster check (5 min)
 
-### Step 4: Lesson and tally (2 min)
+Open the game's file in VS Code's Markdown preview (Cmd+Shift+V): `games/YYYY-MM/<date>-vs-<opponent>-<id>.md`. Each flagged move is a heading with one line saying what happened; the engine's answer is folded underneath. Work through the flags in order:
 
-Write **one** "Next time I will…" rule. Make it an action you can do at the board, such as "Before I move a piece, check whether a pawn can take it there." Avoid vague rules like "be more careful." Then add tally marks to the weekly page.
+1. **Match.** Is this move (or one in a merged run, "Moves 15–17") one of my rows? Yes → ✓. No → it's a ✗ moment; add it as a row if it makes the top 3.
+2. **Guess before unfolding.** For a ✗ flag, or any row with "?" under Better, go to the position before the move and spend about a minute looking for the better move. Checks, captures and threats for both sides.
+3. **Unfold "Show the engine's answer".** Read Better and What your move allowed. If the punishment isn't obvious, play it out on the board. If the idea takes more than about 60 seconds to explain, write "engine idea – skip" under Better.
+4. **Use the Difficulty line** (shown on flags where I lost ground). "Careless slip" means most moves were fine: a process error. "Hard spot" means only 1–3 moves held. It doesn't go in the notebook.
+5. **Fill the right half** of the row: <10 s tick, Tag (see Rules), ✓ / ✗. Leave Maia blank unless this is the week's Maia game.
+6. **Strike out** any of my rows with no flag: draw a line through it and write "–" under ✓/✗. It wasn't a 2-point swing.
+7. **Write the CHK line:** total flags (all of them, even past 3), how many ✓ and ✗, how many rows struck. No flags → "CHK 0 flags".
+
+### Step 4: Lesson (2 min)
+
+1. Write one **NEXT TIME I WILL** rule from the top kept row. It must be an action at the board, such as "before moving a piece, ask whether a pawn can take it there", not "be more careful".
+2. No kept rows (a clean game)? Write **KEEP:** and one habit that worked instead.
+3. Add a tally mark per kept row to the weekly page.
 
 ### Shorter and longer versions
 
-- **10 minutes:** 1 min hot notes, 4 min own review (1–2 moments), 3 min engine, 2 min lesson.
-- **20 minutes:** add 5 minutes to play out the engine's idea at each moment, plus a quick check of your first 8–10 moves in the Explorer.
-- **Bad day (3 minutes):** hot notes, one engine look at the biggest swing, one tally mark.
+A short review beats a skipped one. Pick the version when I sit down and write it next to the game number (e.g. `#32 lite`).
 
-## Using the engine (Chess.com Analysis board)
+| Version | Use for | Min | What to do |
+| --- | --- | --- | --- |
+| Full | Losses, draws, wins where I was ever losing | 15 | All four steps |
+| 10-minute | A busy day | 10 | Hot notes 1, own review 4 (1–2 rows), check 3, lesson 2 |
+| Lite | Clean wins (never felt worse than even) | 5 | Hot notes, then open the chesster file straight away. 0 flags → "CHK 0 flags", KEEP line, done. Otherwise a row per flag, tagged, no ✓/✗ |
+| Bad day | When I'd otherwise skip | 3 | Hot notes, open the file, tag the ★ flag (or the first), one tally mark |
+| Deep | One interesting game, at most weekly | 30–45 | See "Optional: move-by-move deep review" |
 
-Use the engine to check your own review, not replace it: guess first, then reveal, and only look where the number jumped 2+ points. This uses the Analysis board (magnifying glass on a finished game), not Game Review.
+More than 7 games in a week: review losses first, then games I was winning and didn't win.
+
+## Rules
+
+Three rules v1 left to mood. Apply them the same way every game so the weekly tally means something.
+
+### Which 3 moments to keep
+
+Take moments in this order until there are 3. Struck rows never count.
+
+1. **★ First material lost**, in a loss. chesster's line ends "This was the first material you lost in the game." Mark the row with ★.
+2. **The result-changer:** the flag that took me from roughly even or better to losing, or from winning to not winning.
+3. **Engine-only (✗) flags.** A blind spot teaches more than a mistake I already saw.
+4. **Anything else**, in game order.
+
+### Which tag
+
+One tag per row: what I missed on the board. Speed goes in the <10 s column, not the tag.
+
+| chesster says | Usual tag | Pick the other when |
+| --- | --- | --- |
+| you lost material | H | **M** if their previous move created the attack and I didn't look |
+| you missed winning material | T | – |
+| you missed a mate in N | T | – |
+| you allowed a mate in N | K | – |
+| got much worse, no material changes | O in moves 1–10 | **E** in an endgame; otherwise the closest fit |
+
+- **H vs M:** my move put the piece en prise → H. Their move attacked it and I ignored it → M.
+- **C** only when I can't name a board cause, or I was under about 2 minutes on the clock.
+
+### Which Maia class
+
+Weekly Maia game only, kept rows after move 5, rating 1100. The decision order is in `02-maia-mistake-classification.md`.
+
+## The Chess.com Analysis board
+
+chesster now finds the swings, so the Analysis board (magnifying glass on a finished game, not Game Review) is for three jobs: Step 2 with the engine hidden, playing out an engine idea in Step 3, and the deep review. The thresholds and pitfalls below are also the reasoning behind chesster's flags.
 
 ### One-time setup
 
@@ -80,16 +147,6 @@ Use the engine to check your own review, not replace it: guess first, then revea
 | ±2 | A real advantage; a swing this size is worth reviewing |
 | ±5 or more | Usually winning |
 | M3 | Forced mate in 3 |
-
-### The routine (4–6 min)
-
-1. **Find the swings.** Engine on, lines hidden. Tap Forward through the game watching only the top number. Write down every one of your moves after which it moved 2+ points against you, or where you missed a 2+ point chance. Ignore smaller changes.
-2. **Guess first.** At each swing, go back to the position *before* your move. Cover the engine lines with your thumb and spend about a minute looking for a better move. Check captures, checks and threats for both sides.
-3. **Reveal the first move or two only.** Read the start of the top line. Is it a capture, a check or a threat? That tells you your tag (H, M, T or K).
-4. **Find what punished you.** Play the move you actually made, then look at the engine's top reply for your opponent. That reply usually shows exactly what you missed, such as a free piece or a fork.
-5. **Test your in-game idea.** If you considered a different move during the game, play it on the board and watch the number. Two or three tries at most.
-6. **Stop at one sentence.** If you can explain the lesson in one sentence, write it down. If the line is long quiet maneuvering you can't explain within about 60 seconds, write "engine idea – skip."
-7. **Mark ✓ or ✗.** ✓ if you had already found this moment in Step 2, ✗ if only the engine found it. Add any ✗ moment to your notes (still 3 moments maximum).
 
 ### Worked example: when *not* to dig in
 
@@ -142,60 +199,52 @@ Pick the questions that fit the moment; you don't need all of them every game. T
 
 ## Notebook template
 
-Copy the tag key inside the front cover, use half a page per game, and keep one weekly page. Templates are in `../templates/`.
-
-**Choosing the drill from your tally:**
-
-- Lots of **H or M:** hanging-piece puzzles, plus a "can anything take it?" check before every move.
-- Lots of **T:** tactics puzzles (forks, pins).
-- Lots of **C:** spend at least 30 seconds on any move involving a capture or check.
-- Lots of **E:** practice basic winning endgames.
-
-## Example entry
-
-A filled-in entry takes about half a page. This one is an invented example.
+Three kinds of page: the tag key inside the front cover (`../templates/tag-key.md`), half a page per game (`../templates/game-entry.md`, with field-by-field instructions and a filled-in example), and one weekly page every Sunday (`../templates/weekly-page.md`, with the drill table).
 
 ```text
-#23  Oct 14  B  Result L  Opp 712  Opening: Italian
-Clock left (me/opp): 6:40 / 9:15
-HOT: Turned at move 14 – lost my knight, then got mated
-     Felt fine, played 14...Nd4 fast. Tilted after.
-MOMENTS
- 14 | ...Nd4, to hit queen | c3 pawn takes d4 | ...Be7 (develop) | H | ✓
- 19 | ...a6, "waiting"     | Qxf7+ coming     | ...Qe7 guards f7 | M | ✓
- 22 | ...Rd8               | ...Qxb2 won rook | ...Qxb2          | T | ✗
-ENGINE: 22...Qxb2 found only by engine (+0.3 → −2.8).
-        Ignored 5 small changes under 1 point.
-NEXT TIME I WILL: before moving a piece, ask "can a PAWN take it there?"
+#___  Date ____  W/B  W/L/D how ______   vs __________ (____)  me ____
+Opening _____________________________   Clock me/opp ____ / ____
+HOT  Turned at move ___: _____________________________________________
+     Felt / clock: ___________________________________________________
+  Mv | I played … because | Bad because     | Better … because ||<10s|Tag|✓✗|Maia
+ ___ | __________________ | _______________ | ________________ || __ | _ | _ | _
+ ___ | __________________ | _______________ | ________________ || __ | _ | _ | _
+ ___ | __________________ | _______________ | ________________ || __ | _ | _ | _
+CHK  flags ___   ✓ ___   ✗ ___   struck ___
+NEXT TIME I WILL _____________________________________________________
 ```
 
-**Reading it:** two of the three moments were "Hope Chess" (H and M). The engine-only moment (T) points to tactics puzzles as a secondary drill. Tally added: H I, M I, T I.
+The double bar splits what I write in Step 2 (left) from what I write in Step 3 (right).
 
-## Which games, and the bigger reviews
-
-Review every rapid game, up to about 7 a week, at two depths. Losses get the full routine; clean wins get a quick pass.
-
-- **Full routine (15 min):** losses, draws, and games where you were clearly winning but didn't win.
-- **Lite routine (5 min):** clean wins. Hot notes, a quick engine scan for big swings, tally only. Wins often hide a mistake your opponent failed to punish.
-- **More than 7 games a week:** review losses first, then near-misses.
+## Weekly and monthly
 
 ### Weekly review (Sunday, 10 min)
 
-Fill in the weekly page, find your most common tag, and pick one rule and one drill for next week. The tally only helps if you look at it.
+Fill in the weekly page after reading last week's, find the most common tag, and pick one rule and one drill for next week. Reviewed / Played is the consistency score. The tally only helps if I look at it.
+
+### Weekly Maia session (about 30 min)
+
+1. Pick one game: the week's loss with the most kept rows, or the most interesting one.
+2. Copy the PGN from the bottom of its chesster file and paste it into maiachess.com analysis.
+3. Classify each kept row after move 5 (`02-maia-mistake-classification.md`). Write the letter in that entry's Maia column.
+4. Replay the positions before any N moment against Maia at my level.
+5. One round of opening drills.
 
 ### Monthly check
 
-Take your last 10 losses and find the mistake that actually decided each one. Sort them by tag. Spend most of next month's study time on the leading category, and keep opening study a small share. This follows Studer's approach of weighting study time by what actually loses you games.
+1. In the notebook, find the last 10 losses (chesster's `games/` folder has the full archive if a page is missing).
+2. For each, take the row that decided it: the ★ row if there is one, else the result-changer.
+3. Count those 10 tags. Spend most of next month's study time on the leading one, and keep opening study a small share. This follows Studer's approach of weighting study time by what actually loses games.
 
 ### Optional: move-by-move deep review
 
-For an especially interesting game, about once a week at most, you can review every move instead of just 3 moments. Expect 30–45 minutes.
+For an especially interesting game, about once a week at most, review every move instead of just 3 moments. Expect 30–45 minutes.
 
 - Skip the first 5–6 opening moves and forced recaptures.
 - At each move, engine off, ask: what did their last move change? Was there a free capture or tactic for me? After my move, was anything left hanging?
-- Do the thinking on the Analysis board and type comments on moves there (Save adds it to your Chess.com Library).
-- Copy only the 2–3 most important findings and your "Next time I will…" rule into the notebook.
-- Good games work well for this: noticing what you did right shows you which habits to keep.
+- Do the thinking on the Analysis board and type comments on moves there (Save adds it to my Chess.com Library).
+- Copy only the 2–3 most important findings and the "Next time I will…" rule into the notebook.
+- Good games work well for this: noticing what I did right shows which habits to keep.
 
 ## Tools and cost
 
@@ -203,7 +252,8 @@ You don't need to pay for anything. The Analysis board is available to free memb
 
 | Tool | Cost | Use it for |
 | --- | --- | --- |
-| Chess.com Analysis board | Free (Self Analysis) | Your main engine step: eval number, 2–3 lines, testing moves |
+| chesster (this repo) | Free (Stockfish, local) | Flags every 2+ point swing per game, engine answer folded; archives games |
+| Chess.com Analysis board | Free (Self Analysis) | Step 2 with the engine hidden; playing out engine ideas; deep reviews |
 | Chess.com Game Review | 1 free per day; unlimited with Premium | Optional guided review with a Retry button at key moves |
 | Lichess "Learn from your mistakes" | Free, unlimited | Backup: Share → copy PGN, paste at lichess.org/paste, request computer analysis |
 | maiachess.com | Free (Lichess sign-in) | Weekly human-aware analysis, replays, opening drills (see `03-maia-guide.md`) |
@@ -215,18 +265,20 @@ Deeper engine settings (Deep, Maximum) and Cloud Analysis are Diamond-only on Ch
 The caps are what make this sustainable: up to 3 moments, 1 lesson, 15 minutes.
 
 - **No next game until the hot notes are written.** Two minutes protects the most valuable part of the review.
+- **Run `uv run chesster` the moment I sit down to review,** so the files are ready when Step 2 ends.
 - **On bad days, do the 3-minute version** rather than skipping. A short review keeps the habit alive.
 - **Keep the notebook by the screen** with the tag key inside the front cover.
-- **Make the weekly page a fixed Sunday slot.**
-- **Track your ✓ count.** More moments found on your own is visible progress, even in weeks your rating is flat.
-- **Turn each week's top tag into a board habit,** such as a final "can anything take it?" check before every move. The review only pays off if it changes your next game.
+- **Make the weekly page a fixed Sunday slot.** Watch Reviewed / Played and the ✓ count: both can climb in a week my rating doesn't.
+- **Turn each week's top tag into a board habit,** such as a final "can anything take it?" check before every move. The review only pays off if it changes my next game.
 
 ## Caveats
 
 - The exact wording of Studer's three "why" questions comes from secondhand accounts of his video; his own articles confirm the three-moments idea.
 - The 2-point threshold comes from Studer's advice for beginners. Treat it as a filter, not an exact rule.
 - Chess.com menus differ between website and app, and features change often. Menu names here follow Chess.com's help pages as of October 2026.
-- The example entry is invented for illustration.
+- The example entry in `../templates/game-entry.md` is invented for illustration.
+- The selection order, tag precedence and <10 s column are working rules added in v2 (October 26, 2026), not from a published source.
+- chesster does not show time per move yet (planned in slice 3 of `06-build-plan.md`). Until it does, tick the <10 s column from memory and the HOT line.
 
 ## Sources
 

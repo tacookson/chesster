@@ -10,17 +10,21 @@ Maia's researchers found that players at each rating make some mistakes predicta
 
 ## The method (2–3 minutes per moment)
 
-1. Paste the game's PGN into maiachess.com analysis. Set the rating to my Lichess-equivalent, about 1000–1200 (Maia uses the Lichess scale).
-2. Go to the position *before* one of my notebook moments.
-3. In Moves by Rating, find two lines: **my move** and **Stockfish's best move**.
-4. Note the rating where the best move's line rises above mine, then classify:
+1. Paste the game's PGN (the bottom of its chesster file) into maiachess.com analysis. Set the rating to **1100** (decided October 26, 2026; Maia uses the Lichess scale).
+2. Go to the position *before* one of my kept notebook moments. Skip moments in the first 5 moves.
+3. In Moves by Rating, find two lines: **my move** and **Stockfish's best move** (chesster's "Better").
+4. Stop at the first rule that fits:
 
 | Class | What the graph shows | What to do |
 | --- | --- | --- |
-| **N – Next level** | The lines cross within ~300 points above my level | Priority lesson. Replay the position and drill that puzzle theme |
-| **L – Later** | The lines cross 300–800 points above my level | Note it, don't drill it yet |
-| **X – Hard** | The best move stays rare even near 2000+ | "Engine idea – skip." No guilt |
-| **R – Random lapse** | Even players at *my* rating rarely play my move | A habit problem, not a knowledge gap |
+| **R – Random lapse** | At 1100 the best move is already above mine, or my move isn't in the graph | A habit problem, not a knowledge gap |
+| **N – Next level** | The best move overtakes mine by 1400 (+300) | Priority lesson. Replay the position and drill that puzzle theme |
+| **L – Later** | The best move overtakes mine between 1400 and 1900 (+300 to +800) | Note it, don't drill it yet |
+| **X – Hard** | The best move never overtakes mine by 1900 | "Engine idea – skip." No guilt |
+
+If the lines cross more than once, use the rating where the best move goes above mine and stays there.
+
+**Change from v1 (October 26, 2026):** R used to mean "even players at my rating rarely play my move". That had no number, overlapped with N, and left crossovers between 1900 and 2600 unclassified. R now means players at my level already prefer the right move; the fixed order gives every case exactly one class.
 
 ## Why N and R matter most
 
@@ -47,7 +51,8 @@ Add an N/L/X/R letter next to each moment's error tag. On the weekly page, count
 - **Skip the first ~5 moves.** Opening moves are mostly memorized, so the graph says less about them.
 - **Rating scale.** Maia uses Lichess ratings (and was trained on Lichess blitz games). The thresholds above are relative to my Lichess-equivalent, not my Chess.com number.
 - **The screen may change.** maiachess.com is in beta; some features (like the Move Map) have been hard to locate. Each page has a "?" walkthrough.
-- The 300 / 800 point boundaries are my own working thresholds, not values from Maia's research.
+- The 300 / 800 point boundaries, the R rule and the decision order are my own working rules, not values from Maia's research.
+- "My level" stays at 1100 even though my Chess.com rapid rating is now about 773–816; no primary source converts Chess.com to Lichess ratings. Revisit if the classes look skewed.
 
 ## Prior art
 

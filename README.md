@@ -36,7 +36,7 @@ Settings (username, thresholds, engine depth, Stockfish path) live in `chesster.
 | `CLAUDE.md` | Short orientation for a coding agent working in the repo |
 | `PROJECT_BRIEF.md` | Goals for the repo, requirements derived from the method, candidate features, open questions |
 | `docs/00-goals-and-context.md` | My player profile, constraints and every decision made so far |
-| `docs/01-review-process.md` | The full 15-minute game review system (process, engine routine, question bank, notebook template) |
+| `docs/01-review-process.md` | The 15-minute game review system, v2 (process with chesster, selection and tag rules, question bank, notebook template) |
 | `docs/02-maia-mistake-classification.md` | The crossover method: sorting each mistake into N / L / X / R using Maia |
 | `docs/03-maia-guide.md` | Deep dive on Maia: models, features, how people use it, limitations, my weekly Maia plan |
 | `docs/04-research-notes.md` | Key research findings, thresholds and caveats, with sources |
@@ -52,5 +52,6 @@ Settings (username, thresholds, engine depth, Stockfish path) live in `chesster.
 
 These files were exported from two living docs, which may have been edited since:
 
-- Chess Game Review System: https://claude.ai/artifact/66XYr4VUEGUvFqBynq6Yyr
+- Chess Game Review System (v1): https://claude.ai/artifact/66XYr4VUEGUvFqBynq6Yyr
+- Chess Game Review Framework v2: https://claude.ai/artifact/NLpPsJqsApS2tg4ULEr56r (`docs/01` and `templates/` were updated to match on October 26, 2026)
 - Maia Chess Deep Dive: https://claude.ai/artifact/XKM7tGAEMPbQGVRfzAnmBf
