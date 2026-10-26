@@ -65,7 +65,7 @@ Don't tag yet and don't write ✓. Both depend on Step 3. The left-half columns 
 
 ### Step 3: chesster check (5 min)
 
-Open the game's file in VS Code's Markdown preview (Cmd+Shift+V): `games/YYYY-MM/<date>-vs-<opponent>-<id>.md`. Check the title's match ID against the notebook. Each flagged move is a heading with one line saying what happened and a Time line (seconds spent, clock left); the engine's answer is folded underneath. Work through the flags in order:
+Open the game's file in VS Code's Markdown preview (Cmd+Shift+V): `games/YYYY-MM/<match ID>_<date>-vs-<opponent>-<id>.md`, so the notebook's `#` finds the file. Check the title's match ID against the notebook. Each flagged move is a heading with one line saying what happened and a Time line (seconds spent, clock left); the engine's answer is folded underneath. Work through the flags in order:
 
 1. **Match.** Is this move (or one in a merged run, "Moves 15–17") one of my rows? Yes → ✓. No → it's a ✗ moment; add it as a row if it makes the top 3.
 2. **Guess before unfolding.** For a ✗ flag, or any row with "?" under Better, go to the position before the move and spend about a minute looking for the better move. Checks, captures and threats for both sides.

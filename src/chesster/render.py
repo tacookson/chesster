@@ -124,7 +124,14 @@ def game_info(game: dict, pgn_game, username: str, timezone: str, match: str | N
 
 def path_for(info: GameInfo, games_dir: Path) -> Path:
     opponent = re.sub(r"[^A-Za-z0-9_-]", "", info.opponent)
-    return games_dir / info.date[:7] / f"{info.date}-vs-{opponent}-{info.id}.md"
+    prefix = f"{info.match}_" if info.match else ""
+    return games_dir / info.date[:7] / f"{prefix}{info.date}-vs-{opponent}-{info.id}.md"
+
+
+def renamed(path: Path, match: str | None) -> Path:
+    """The path a game file should have for its match ID (adds, swaps or drops the prefix)."""
+    name = re.sub(r"^\d{6}-\d+_", "", path.name)
+    return path.with_name(f"{match}_{name}" if match else name)
 
 
 def eval_words(cp: int) -> str:

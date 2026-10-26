@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from chesster import analyse, render
 from chesster.analyse import Flag
 
@@ -93,3 +95,19 @@ def test_coach_games_get_no_match_id():
     coach = _game("5", 1792760400) | dict(white={"username": "Me4tbegZ0r"}, black={"username": "Coach-Magnus"})
     human = _game("6", 1792764000) | dict(white={"username": "Me4tbegZ0r"}, black={"username": "opp"})
     assert render.match_ids([coach, human], "America/Toronto") == {"6": "261023-1"}
+
+
+def test_match_id_prefixes_filename():
+    path = render.path_for(_info(match="261023-1", id="185827995884"), Path("games"))
+    assert path == Path("games/2026-10/261023-1_2026-10-23-vs-opp-185827995884.md")
+
+
+def test_no_prefix_without_match_id():
+    assert render.path_for(_info(), Path("games")).name == "2026-10-23-vs-opp-1.md"
+
+
+def test_renamed_adds_swaps_and_drops_the_prefix():
+    old = Path("games/2026-10/2026-10-23-vs-suresh_0705-9.md")
+    assert render.renamed(old, "261023-2").name == "261023-2_2026-10-23-vs-suresh_0705-9.md"
+    assert render.renamed(old.with_name("261023-1_" + old.name), "261023-2").name == "261023-2_" + old.name
+    assert render.renamed(old.with_name("261023-1_" + old.name), None) == old

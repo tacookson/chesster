@@ -44,11 +44,11 @@ src/chesster/
     render.py            # markdown output
 games/
     2026-10/
-        2026-10-24-vs-suresh_0705-185827995884.md
+        261024-1_2026-10-24-vs-suresh_0705-185827995884.md
 tests/
 ```
 
-The game ID ends each filename, so dedupe is a filename check. Dates use America/Toronto time.
+The match ID starts each rapid game's filename, so files sort by it and match the notebook's `#`; other time controls have no prefix. The Chess.com game ID ends each filename, so dedupe is a filename check. Each full run renames existing files whose prefix is missing or out of date (and says so), and re-processing a game removes its file under any older name. Dates use America/Toronto time.
 
 ## Game file format
 
