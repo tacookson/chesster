@@ -1,4 +1,5 @@
-"""One markdown file per game: header, flagged moves (answers folded), PGN."""
+"""One markdown file per game, in review order: header for hot notes, PGN for my own review, then
+the engine check, folded."""
 
 import re
 from dataclasses import dataclass
@@ -23,6 +24,7 @@ ENDINGS = {
              "50move": "draw by the 50-move rule",
              "timevsinsufficient": "draw, time ran out with no mating material"},
 }
+NOT_ANALYSED = "Not analysed yet."
 MATERIAL = {1: "a pawn", 2: "two pawns' worth of material", 3: "a piece", 4: "a piece and a pawn",
             5: "a rook", 6: "a rook and a pawn", 8: "a rook and a piece", 9: "a queen"}
 
@@ -50,7 +52,10 @@ def _opening(pgn_game) -> str:
     url = pgn_game.headers.get("ECOUrl", "")
     slug = url.rsplit("/openings/", 1)[-1].split("...")[0]
     # Slugs can end in a move number cut off from the "..." moves, e.g. "Exchange-Variation-3".
-    name = re.sub(r"-\d+$", "", slug).replace("-", " ").strip() or pgn_game.headers.get("ECO", "?")
+    name = re.sub(r"-\d+$", "", slug).replace("-", " ").strip()
+    if not name:
+        eco = pgn_game.headers.get("ECO", "")
+        name = eco if eco not in ("", "?") else "Unknown opening"
     return re.sub(r"\b(Queen|King|Bishop|Alekhine|Petrov|Bird|Philidor)s\b", r"\1's", name)
 
 
@@ -139,19 +144,18 @@ def _headline(flag: Flag) -> str:
         what = f"you allowed a mate in {flag.mate_in}"
     else:
         what = "your position got much worse, though no material changes hands right away"
-    return f"**{severity}: {what}.**"
+    headline = f"**{severity}: {what}.**"
+    if flag.decided == "losing":
+        headline += " You were already losing, so this didn't change the likely result."
+    elif flag.decided == "winning":
+        headline += " You were still winning after it, so this didn't change the likely result."
+    return headline
 
 
 def _difficulty(safe: tuple[int, int]) -> str:
+    """The safe-move count, with no verdict: why the move happened is mine to judge."""
     held, legal = safe
-    if held <= 3:
-        verdict = "This was a hard spot."
-    elif held / legal >= 0.5:
-        verdict = "Most moves were fine, so this was a careless slip."
-    else:
-        verdict = "A handful of moves were fine."
-    count = f"Only {held}" if held <= 3 else f"{held}"
-    return f"{count} of your {legal} legal moves kept your position. {verdict}"
+    return f"{held} of your {legal} legal {'move' if legal == 1 else 'moves'} kept your position."
 
 
 def _moment(flag: Flag, colour: str) -> str:
@@ -202,6 +206,7 @@ def _time_control(tc: str) -> str:
 def render(info: GameInfo, pgn: str, moments: list[Flag] | None) -> str:
     date = datetime.strptime(info.date, "%Y-%m-%d").strftime("%-d %b %Y")
     rated = "rated" if info.rated else "unrated"
+    analysed = moments is not None
     out = [
         "---",
         f"url: {info.url}",
@@ -213,22 +218,35 @@ def render(info: GameInfo, pgn: str, moments: list[Flag] | None) -> str:
         f"opening: {info.opening}",
         f"time_control: {info.time_control}",
         f"rated: {str(info.rated).lower()}",
+        f"analysed: {str(analysed).lower()}",
         "---",
         "",
         f"# {date} · {info.result.capitalize()} as {info.colour.capitalize()} vs "
         f"{info.opponent} ({info.opponent_rating})",
         "",
+        "## 1. Hot notes",
+        "",
         f"You: {info.my_rating} · {_time_control(info.time_control)} {rated} · {info.opening}  ",
         f"Ended: {_ending(info)} · Clock left: you {info.clock_me}, opponent {info.clock_opp}",
         "",
+        "## 2. Own review, engine off",
+        "",
+        "Paste into maiachess.com and pick your own moments before opening the engine check.",
+        "",
+        "```pgn", pgn.strip(), "```",
+        "",
+        "## 3. Engine check",
+        "",
     ]
-    if moments is None:
-        out += ["## Moves to review", "", "Not analysed yet.", ""]
-    elif not moments:
-        out += ["## Moves to review", "", "None: no big swings in this game.", ""]
+    if not analysed:
+        out += [f"{NOT_ANALYSED} Run `uv run chesster` after your own review.", ""]
+        return "\n".join(out)
+    out += ["<details>", "<summary>Open after your own review</summary>", ""]
+    if not moments:
+        out += ["No big swings in this game.", ""]
     else:
         count = "1 move" if len(moments) == 1 else f"{len(moments)} moves"
-        out += [f"## {count} to review", ""]
+        out += [f"Stockfish flagged {count}. Go deep on the ones you choose.", ""]
         out += [_moment(m, info.colour.capitalize()) for m in moments]
-    out += ["## PGN", "", "```pgn", pgn.strip(), "```", ""]
+    out += ["</details>", ""]
     return "\n".join(out)

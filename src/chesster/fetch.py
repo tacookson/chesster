@@ -1,20 +1,36 @@
 """Chess.com published-data API: monthly game archives, no auth."""
 
 import json
+import re
+import urllib.error
 import urllib.request
 
 API = "https://api.chess.com/pub/player/{user}/games/archives"
 USER_AGENT = "chesster (personal game review tool; github.com/tacookson/chesster)"
 
 
+class FetchError(RuntimeError):
+    """Chess.com couldn't be reached or didn't have what we asked for."""
+
+
 def _get(url: str) -> dict:
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(request, timeout=30) as response:
-        return json.load(response)
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as e:
+        raise FetchError(f"Chess.com returned HTTP {e.code} for {url}") from e
+    except urllib.error.URLError as e:
+        raise FetchError(f"Couldn't reach Chess.com ({e.reason}). Check your connection.") from e
 
 
 def archive_urls(username: str) -> list[str]:
-    return _get(API.format(user=username.lower()))["archives"]
+    try:
+        return _get(API.format(user=username.lower()))["archives"]
+    except FetchError as e:
+        if "HTTP 404" in str(e):
+            raise FetchError(f"Chess.com has no player '{username}'. Check username in chesster.toml.") from e
+        raise
 
 
 def games(username: str, time_classes: tuple[str, ...]):
@@ -29,11 +45,20 @@ def game_id(game: dict) -> str:
     return game["url"].rstrip("/").rsplit("/", 1)[1]
 
 
+def id_from_url(url: str) -> str:
+    """The game id in a Chess.com game URL, including copied analysis links and ?move= suffixes."""
+    match = re.search(r"/game/(?:live/|daily/)?(\d+)", url) or re.fullmatch(r"\s*(\d+)\s*", url)
+    if not match:
+        raise LookupError(f"'{url}' doesn't look like a Chess.com game URL, e.g. "
+                          "https://www.chess.com/game/live/123456789")
+    return match.group(1)
+
+
 def find_game(username: str, url: str) -> dict:
     """Find one game by its URL. There is no single-game endpoint, so search the archives."""
-    wanted = url.rstrip("/").rsplit("/", 1)[1]
+    wanted = id_from_url(url)
     for archive in reversed(archive_urls(username)):
         for game in _get(archive).get("games", []):
             if game_id(game) == wanted:
                 return game
-    raise LookupError(f"Game {url} not found in {username}'s archives")
+    raise LookupError(f"Game {wanted} not found in {username}'s archives")

@@ -18,6 +18,8 @@ ALLOWED_MATE = "allowed mate"
 DEEPER = "deeper"
 # Flags where I lost ground, as opposed to failing to cash in an opponent's error.
 LOST_GROUND = {LOST_MATERIAL, ALLOWED_MATE, DEEPER}
+# Most specific first: a merged moment takes the most specific type among its moves.
+KINDS = [ALLOWED_MATE, MISSED_MATE, LOST_MATERIAL, MISSED_MATERIAL, DEEPER]
 
 
 def win_percent(cp: int) -> float:
@@ -69,12 +71,14 @@ class Flag:
     mate_in: int | None = None  # moves to mate, for missed or allowed mate
     merged: list[str] = field(default_factory=list)  # later moves merged into this moment
     first_material_loss: bool = False
+    decided: str = ""           # "losing" or "winning" if the swing didn't change the likely result
 
 
 def format_eval(e: Eval, colour: chess.Color) -> str:
     mate = e.mate(colour)
     if mate is not None:
-        return f"M{mate}" if mate > 0 else f"−M{-mate}"
+        # Mate 0 is checkmate on the board; its sign is in the score, not the mate count.
+        return f"M{mate}" if mate > 0 or (mate == 0 and e.cp(colour) > 0) else f"−M{-mate}"
     cp = e.score.pov(colour).score()
     if round(cp / 100, 1) == 0:
         return "0.0"
@@ -142,13 +146,22 @@ def classify(before_board: chess.Board, after_board: chess.Board, before: Eval, 
 
 
 def evaluate_game(game, me: chess.Color, engine: chess.engine.SimpleEngine, depth: int) -> list[Eval]:
-    """Evaluate every position in the mainline once (N moves → N+1 evals)."""
+    """Evaluate every position in the mainline once (N moves → N+1 evals).
+
+    Passing `game` makes python-chess send `ucinewgame`, so Stockfish's hash starts empty for each
+    game and a game's flags don't depend on what was analysed before it.
+    """
     board = game.board()
     evals = []
-    for node in [None, *game.mainline()]:
+    nodes = [None, *game.mainline()]
+    for i, node in enumerate(nodes):
         if node is not None:
             board.push(node.move)
-        info = engine.analyse(board, chess.engine.Limit(depth=depth))
+        if i == len(nodes) - 1 and (board.is_repetition(3) or board.is_fifty_moves()):
+            # Chess.com ends the game here as a draw; Stockfish would score it as if play went on.
+            evals.append(Eval(chess.engine.PovScore(chess.engine.Cp(0), board.turn), []))
+            continue
+        info = engine.analyse(board, chess.engine.Limit(depth=depth), game=game)
         evals.append(Eval(info["score"], info.get("pv", [])))
     return evals
 
@@ -158,7 +171,8 @@ def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder
     flags = []
     for ply, node in enumerate(game.mainline()):
         move = node.move
-        if board.turn == me:
+        # A forced move can't be a mistake, whatever the evals say.
+        if board.turn == me and board.legal_moves.count() > 1:
             before, after = evals[ply], evals[ply + 1]
             drop = win_percent(before.cp(me)) - win_percent(after.cp(me))
             if drop >= mistake:
@@ -193,36 +207,52 @@ def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder
 
 
 def merge(flags: list[Flag]) -> list[Flag]:
-    """Merge flags on my consecutive moves that share a best move or a punishing reply."""
+    """Merge flags on my consecutive moves that share a best move or a punishing reply.
+
+    Each flag is compared with the one before it, so a chain of shared ideas stays one moment.
+    The moment runs from the first move's eval to the last move's, and takes the worst severity
+    and the most specific type among its moves.
+    """
     moments: list[Flag] = []
+    previous: Flag | None = None
     for flag in flags:
-        if moments:
-            last = moments[-1]
-            last_ply = last.ply + 2 * len(last.merged)
-            same_idea = flag.best_uci == last.best_uci or (
-                flag.punished_uci and flag.punished_uci == last.punished_uci)
-            if flag.ply == last_ply + 2 and same_idea:
+        if previous is not None:
+            same_idea = flag.best_uci == previous.best_uci or (
+                flag.punished_uci and flag.punished_uci == previous.punished_uci)
+            if flag.ply == previous.ply + 2 and same_idea:
+                last = moments[-1]
                 last.merged.append(flag.move_label)
                 if flag.severity == "blunder":
                     last.severity = "blunder"
                 last.drop = max(last.drop, flag.drop)
+                last.after, last.after_cp = flag.after, flag.after_cp
+                if KINDS.index(flag.kind) < KINDS.index(last.kind):
+                    last.kind, last.mate_in, last.material = flag.kind, flag.mate_in, flag.material
+                previous = flag
                 continue
         moments.append(flag)
+        previous = flag
     return moments
 
 
 def add_safe_counts(game, me: chess.Color, moments: list[Flag], engine: chess.engine.SimpleEngine,
                     depth: int, mistake: float) -> None:
-    """Count legal moves within the mistake threshold of the best move, for lost-ground flags."""
+    """Count legal moves within the mistake threshold of the best move, for lost-ground flags.
+
+    The move I played never counts as safe: it was flagged at full depth, and the shallower
+    search here could otherwise contradict the flag.
+    """
     wanted = {m.ply: m for m in moments if m.kind in LOST_GROUND}
     board = game.board()
     for ply, node in enumerate(game.mainline()):
         if ply in wanted:
             legal = board.legal_moves.count()
-            infos = engine.analyse(board, chess.engine.Limit(depth=depth), multipv=legal)
-            scores = [win_percent(i["score"].pov(me).score(mate_score=100_000)) for i in infos]
-            best = max(scores)
-            wanted[ply].safe = (sum(1 for s in scores if best - s < mistake), legal)
+            infos = engine.analyse(board, chess.engine.Limit(depth=depth), multipv=legal, game=game)
+            scores = [(i["pv"][0] if i.get("pv") else None,
+                       win_percent(i["score"].pov(me).score(mate_score=100_000))) for i in infos]
+            best = max(s for _, s in scores)
+            held = sum(1 for move, s in scores if move != node.move and best - s < mistake)
+            wanted[ply].safe = (held, legal)
         board.push(node.move)
 
 
@@ -233,11 +263,21 @@ def mark_first_material_loss(moments: list[Flag]) -> None:
             return
 
 
+def mark_decided(moments: list[Flag], decided_cp: int) -> None:
+    """Note swings that left the likely result alone: already losing, or still winning after."""
+    for moment in moments:
+        if moment.before_cp <= -decided_cp and moment.after_cp <= -decided_cp:
+            moment.decided = "losing"
+        elif moment.before_cp >= decided_cp and moment.after_cp >= decided_cp:
+            moment.decided = "winning"
+
+
 def analyse(game, me: chess.Color, engine: chess.engine.SimpleEngine, depth: int, safe_depth: int,
-            mistake: float, blunder: float, lost: bool) -> list[Flag]:
+            mistake: float, blunder: float, decided_cp: int, lost: bool) -> list[Flag]:
     evals = evaluate_game(game, me, engine, depth)
     moments = merge(find_flags(game, me, evals, mistake, blunder))
     add_safe_counts(game, me, moments, engine, safe_depth, mistake)
+    mark_decided(moments, decided_cp)
     if lost:
         mark_first_material_loss(moments)
     return moments

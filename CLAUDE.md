@@ -16,9 +16,10 @@ Tools to help me analyze my own chess games as a ~700 Chess.com rapid (15+10) pl
 
 ## Non-negotiables
 
-- Don't show engine answers before I've done my own review. Support the order: hot notes → own review → engine check → one lesson.
-- Surface only swings of about 2+ points that changed the likely result. Hide inaccuracies and Accuracy %.
-- Max 3 moments and 1 lesson per game.
+- Don't show engine answers before I've done my own review. Support the order: hot notes → own review → engine check → one lesson. Output follows that order too: header for hot notes first, PGN for my own review next, engine flags last and folded.
+- Surface only big swings (20+ Win% points, about 2 points from level). A swing in a game I was already losing, or was still winning after, is still listed but says it didn't change the likely result. Hide inaccuracies and Accuracy %.
+- Max 3 moments and 1 lesson per game *in the notebook*. chesster lists every flagged swing; I pick which ones to go deep on.
+- Engine output gives facts (best move, eval change, safe-move count), never a judgement about why I went wrong. Cause is mine to tag.
 - Error tags are fixed: H, M, T, K, C, O, E. Maia classes are fixed: N, L, X, R. Engine marks: ✓ / ✗.
 - No paid services assumed.
 

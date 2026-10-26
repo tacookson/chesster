@@ -15,3 +15,6 @@ safe_depth = 12      # depth for the safe-move count (scores every legal move)
 # About 2x Lichess's own bars (5 / 10 / 15); see docs/07.
 mistake = 20
 blunder = 30
+# A swing that starts and ends at least this far from equal (centipawns, my side) didn't change
+# the likely result: I was already losing, or still winning after it. It's still listed, and says so.
+decided = 200
