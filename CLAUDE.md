@@ -25,7 +25,7 @@ Tools to help me analyze my own chess games as a 773–816 Chess.com rapid (15+1
 ## Conventions to watch
 
 - Evaluation sign differs by source (Chess.com: White's view; maiachess.com: side to move). Normalize.
-- Maia ratings are on the Lichess scale; my Chess.com rapid is 773–816. The Lichess equivalent of ≈ 1000–1200 is based on ~700; needs re-deriving (Q5).
+- Maia ratings are on the Lichess scale; my Chess.com rapid is 773–816. "My level" in Maia is 1100 (decided Oct 26, Q5).
 - Facts in `docs/` were researched in October 2026 and may have changed (Chess.com menus, Maia site features, model versions). Verify before depending on them.
 - Open questions about the repo's shape are listed at the end of `PROJECT_BRIEF.md`. Ask me before deciding them.
 - Commits carry no Claude attribution: no `Co-Authored-By: Claude` or `Claude-Session:` lines.

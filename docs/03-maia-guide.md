@@ -156,7 +156,7 @@ One 30-minute session a week on top of daily Chess.com reviews. Rated 15+10 game
 **One-time setup (10 min)**
 
 - Sign in to maiachess.com with a Lichess account (free).
-- Set the analysis rating to about 1100.
+- Set the analysis rating to 1100 (decided October 26, 2026).
 - Run each page's "?" walkthrough once.
 
 **Weekly session (30 min)**

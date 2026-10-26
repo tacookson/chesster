@@ -38,7 +38,7 @@ Help me (a 773–816 Chess.com rapid player) analyze my own games using the revi
 
 - Chess.com shows evaluations from White's side; maiachess.com shows them from the side to move. Normalize to one convention.
 - Lichess labels mistakes by drops in winning chances: 0.1 / 0.2 / 0.3 on a −1 to +1 scale, i.e. **5 / 10 / 15 Win% points** = inaccuracy / mistake / blunder (verified in lila `Advice.scala`; the "10 / 20 / 30" figure in forum posts is a misreading). See `docs/07-mistake-classification-research.md`.
-- Maia uses the Lichess rating scale. My Chess.com rapid rating is 773–816. The Lichess equivalent of roughly 1000–1200 is based on ~700; needs re-deriving (Q5).
+- Maia uses the Lichess rating scale. My Chess.com rapid rating is 773–816. Maia "my level" is 1100 (decided Oct 26, Q5).
 - Maia-3 was trained on Lichess blitz games (Jan 2023 – Jul 2025); it's a close guide for 15+10 rapid, not exact.
 - Maia's top-move prediction is right about 57% of the time; trust patterns across games, not single positions.
 - Skip the first ~5 moves for Maia classification (memorized openings).
@@ -49,4 +49,4 @@ Help me (a 773–816 Chess.com rapid player) analyze my own games using the revi
 2. ~~Should it store my notebook data (tags, lessons), or only prepare and summarize games?~~ **Decided:** no notebook data. The repo finds engine mistakes/blunders and archives games; all tracking stays on paper (see `docs/00-goals-and-context.md`).
 3. **Partly decided:** Maia via maiachess.com (website); Stockfish run by chesster to flag moves. Original question: Run engines locally (Stockfish binary, Maia-3 model files) or rely on websites (Chess.com, Lichess, maiachess.com)?
 4. ~~Printed sheets vs a screen view for the per-game prep?~~ **Decided:** screen. Each game is a markdown file read in VS Code's Markdown preview, with engine answers folded (see `docs/00-goals-and-context.md`, Viewing and reveal).
-5. Which Maia rating to treat as "my level" (default 1100) and whether to recalibrate as my rating changes.
+5. ~~Which Maia rating to treat as "my level" (default 1100) and whether to recalibrate as my rating changes.~~ **Decided (Oct 26):** stay at 1100 for now.

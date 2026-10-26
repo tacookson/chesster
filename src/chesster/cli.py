@@ -14,8 +14,21 @@ import chess.pgn
 from chesster import analyse, config, fetch, render
 
 
+def _game_id(path: Path) -> str:
+    return path.stem.rsplit("-", 1)[1]
+
+
 def _existing_ids(games_dir: Path) -> set[str]:
-    return {p.stem.rsplit("-", 1)[1] for p in games_dir.glob("*/*.md")}
+    return {_game_id(p) for p in games_dir.glob("*/*.md")}
+
+
+def _rename_files(games_dir: Path, matches: dict[str, str]) -> None:
+    """Give existing game files their match ID prefix, e.g. 261014-1_2026-10-14-vs-...md."""
+    for path in sorted(games_dir.glob("*/*.md")):
+        target = render.renamed(path, matches.get(_game_id(path)))
+        if target != path and not target.exists():
+            path.rename(target)
+            print(f"Renamed {path} → {target.name}")
 
 
 def _open_engine(path: str) -> chess.engine.SimpleEngine:
@@ -48,6 +61,9 @@ def process(game: dict, cfg: config.Config, engine: chess.engine.SimpleEngine | 
     path = render.path_for(info, cfg.games_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(render.render(info, game["pgn"], moments))
+    for old in path.parent.glob(f"*-{info.id}.md"):
+        if old != path:
+            old.unlink()  # same game under an older name, e.g. before match IDs
     return path
 
 
@@ -75,6 +91,7 @@ def main(argv: list[str] | None = None) -> None:
         done = _existing_ids(cfg.games_dir)
         fetched = list(fetch.games(cfg.username, time_classes))
         matches = render.match_ids(fetched, cfg.timezone)
+        _rename_files(cfg.games_dir, matches)
         todo = [g for g in fetched if fetch.game_id(g) not in done]
     if not todo:
         print("No new games.")

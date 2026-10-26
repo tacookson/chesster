@@ -6,7 +6,7 @@
 | --- | --- |
 | Platform | Chess.com |
 | Time control | Rapid, 15+10 |
-| Rating | 773–816 Chess.com rapid (October 2026). Lichess equivalent roughly 1000–1200, based on ~700; needs re-deriving (Q5) |
+| Rating | 773–816 Chess.com rapid (October 2026). Maia "my level" stays at 1100 (decided October 26, 2026; Q5) |
 | Volume | 5–7 games a week |
 | Review time budget | 10–20 minutes per game |
 | Note-taking | Physical paper notebook |
@@ -39,6 +39,15 @@
 - **Output:** a markdown file per game, which is also its archive entry.
 - **Viewing and reveal:** files are read in VS Code's Markdown preview. Each flag shows its label up top; the engine answer (best move, punishing reply, eval change) sits in a collapsed `<details>` block underneath. To verify: `<details>` folds in VS Code's built-in preview (the Cursor forum reports it does in the dedicated preview).
 - **Archive scope:** my entire Chess.com history (the account's archive starts October 2026).
+
+**Review method v2** (decided October 26, 2026; full text in `docs/01-review-process.md`)
+
+- chesster replaces the "find the swings" part of the engine step. Its game file stays closed until my own moments are written, because its headings name the flagged moves.
+- ✓ / ✗ is judged against chesster's flags. My moments with no flag are struck through and counted, not tallied.
+- Keep up to 3 moments in this order: first material lost (in a loss) → result-changer → engine-only flags → the rest.
+- Tag what I missed on the board; a separate <10 s column, filled from chesster's Time line, records speed. C only when there's no board cause or under ~2 minutes left.
+- Maia level stays at **1100**. Maia classes use a fixed decision order: R (best move already leads at 1100, or my move isn't in the graph) → N (+300) → L (+300 to +800) → X.
+- The notebook `#` is chesster's match ID. The weekly page adds Reviewed / Played, struck rows and fast moves.
 
 **Review method**
 

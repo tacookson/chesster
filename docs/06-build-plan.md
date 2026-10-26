@@ -44,11 +44,11 @@ src/chesster/
     render.py            # markdown output
 games/
     2026-10/
-        2026-10-24-vs-suresh_0705-185827995884.md
+        261024-1_2026-10-24-vs-suresh_0705-185827995884.md
 tests/
 ```
 
-The game ID ends each filename, so dedupe is a filename check. Dates use America/Toronto time.
+The match ID starts each rapid game's filename, so files sort by it and match the notebook's `#`; other time controls have no prefix. The Chess.com game ID ends each filename, so dedupe is a filename check. Each full run renames existing files whose prefix is missing or out of date (and says so), and re-processing a game removes its file under any older name. Dates use America/Toronto time.
 
 ## Game file format
 
@@ -146,7 +146,7 @@ Answer, on my Mac:
 ### M2: Classification (only if M1 is a go)
 
 - For each flag, sweep Maia for my move and Stockfish's best move; find the crossover; label N / L / X / R. Report in coarse bands with a minimum probability gap, and give explicit outcomes for "no crossover" and "multiple crossovers" (Maia-2's predictions move consistently with rating in only ~27% of positions).
-- Before building, tighten the rules in survey gaps 5 and 6: numeric definitions of "rare", the 2000–2600 gap, multiple crossings, and which Maia rating counts as "me" (my Chess.com rating is now 773–816, not ~700).
+- **Done for the manual method (Oct 26):** gaps 5 and 6 now have a fixed decision order and 1100 as my level (`docs/02`). M2 still needs a minimum probability gap and an "unclear" outcome. Original bullet: Before building, tighten the rules in survey gaps 5 and 6: numeric definitions of "rare", the 2000–2600 gap, multiple crossings, and which Maia rating counts as "me" (my Chess.com rating is now 773–816, not ~700).
 - Optional: estimate how likely an opponent at my level was to find the punishing reply.
 
 ### Deferred: a rating-scale difficulty score
