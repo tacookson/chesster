@@ -6,9 +6,9 @@ Help me (a 773–816 Chess.com rapid player) analyze my own games using the revi
 
 ## Principles the tooling must respect
 
-1. **My thinking comes first.** Never show engine output before I've recorded my own moments. Anything automated should support the "hot notes → own review → engine check" order, not skip it.
-2. **Only big swings matter.** Surface moves that cost about 2+ points *and* changed the likely result (judge by winning chances, not raw centipawns). Hide inaccuracies, Accuracy %, and small differences between engine lines.
-3. **Cap the output.** At most 3 moments and 1 lesson per game. More detail is noise at this level.
+1. **My thinking comes first.** Never show engine output before I've recorded my own moments. Anything automated should support the "hot notes → own review → engine check" order, not skip it, and lay out its output in that order.
+2. **Only big swings matter.** Surface moves that cost about 2+ points (judge by winning chances, not raw centipawns). When I was already losing, or was still winning after the move, say that the swing didn't change the likely result. Hide inaccuracies, Accuracy %, and small differences between engine lines.
+3. **Cap the notebook, not the list.** At most 3 moments and 1 lesson per game go in the notebook. The tooling lists every big swing it finds, and I choose which to go deep on.
 4. **Track patterns over time.** The value is in the weekly tally (H/M/T/K/C/O/E) and the ✓/✗ ratio, not in any single game.
 5. **Human context from Maia.** For each moment, classify it N / L / X / R using the crossover method (`docs/02-maia-mistake-classification.md`).
 6. **Paper stays primary.** I take notes in a physical notebook. Tooling should prepare and summarize, not force me to type everything.

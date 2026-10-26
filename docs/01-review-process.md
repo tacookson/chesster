@@ -48,7 +48,7 @@ This is GM Noël Studer's "3×3" method (three moments, three whys each), trimme
 
 ### Step 3: Engine check (4–6 min)
 
-Turn the engine on and check only the big swings. The full routine is in the next section.
+Turn the engine on and check only the big swings. The full routine is in the next section. If you use chesster, its game file already lists them under "3. Engine check", folded until you open it; open it only after Step 2.
 
 ### Step 4: Lesson and tally (2 min)
 

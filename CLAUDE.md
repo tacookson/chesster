@@ -16,9 +16,10 @@ Tools to help me analyze my own chess games as a 773–816 Chess.com rapid (15+1
 
 ## Non-negotiables
 
-- Don't show engine answers before I've done my own review. Support the order: hot notes → own review → engine check → one lesson.
-- Surface only swings of about 2+ points that changed the likely result. Hide inaccuracies and Accuracy %.
-- Max 3 moments and 1 lesson per game.
+- Don't show engine answers before I've done my own review. Support the order: hot notes → own review → engine check → one lesson. Output follows that order too: header for hot notes first, PGN for my own review next, engine flags last and folded.
+- Surface only big swings (15+ Win% points; see `docs/06-build-plan.md` "Rules to confirm"). A swing in a game I was already losing, or was still winning after, is still listed but says it didn't change the likely result. Hide inaccuracies and Accuracy %.
+- Max 3 moments and 1 lesson per game *in the notebook*. chesster lists every flagged swing; I pick which ones to go deep on.
+- Engine output gives facts (best move, eval change, safe-move count), never a judgement about why I went wrong. Cause is mine to tag.
 - Error tags are fixed: H, M, T, K, C, O, E. Maia classes are fixed: N, L, X, R. Engine marks: ✓ / ✗.
 - No paid services assumed.
 
@@ -29,3 +30,4 @@ Tools to help me analyze my own chess games as a 773–816 Chess.com rapid (15+1
 - Facts in `docs/` were researched in October 2026 and may have changed (Chess.com menus, Maia site features, model versions). Verify before depending on them.
 - Open questions about the repo's shape are listed at the end of `PROJECT_BRIEF.md`. Ask me before deciding them.
 - Commits carry no Claude attribution: no `Co-Authored-By: Claude` or `Claude-Session:` lines.
+- Branch names describe the change in short kebab-case, easy to read and type: `maia-classes`, `fix-merge-evals`. No session IDs or random suffixes. If the environment assigns a generated name and won't push anywhere else, use it, and suggest a readable name in the PR so I can rename it.

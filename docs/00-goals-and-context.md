@@ -33,11 +33,11 @@
 - **Which games:** every rapid game not already archived (the archive is the record of what's done), with an option to re-run one game by URL. Rapid only by default; an option to include other time controls. Games against Chess.com's coach bots (usernames starting `Coach-`, e.g. Coach-Magnus) are never imported.
 - **Chess.com username:** Me4tbegZ0r (lowercase in API paths: `me4tbegz0r`).
 - **How errors are identified:** Stockfish flags moves by drop in my winning chances. Stockfish alone can't tell whether an error is human-findable at my level, so:
-  1. **Baseline (build now):** each flag gets a simple type label (material, mate in ≤2, deeper). Nothing hidden. Consecutive flags for the same missed idea merge into one moment.
-  2. **Spike in parallel:** test Maia-3 locally on macOS (inputs, move probabilities across ratings, speed, licence).
+  1. **Baseline (built):** each flag gets a simple type label (allowed mate in N, missed mate in N, lost material, missed material, deeper). Consecutive flags for the same missed idea merge into one moment. Every flag is listed, not just three; I pick which to go deep on. A swing where I was already losing, or was still winning after it, is labelled as not changing the likely result.
+  2. **Spike in parallel:** test Maia locally (inputs, move probabilities across ratings, speed, licence). **Done Oct 25 in the cloud:** go on Maia-3, no-go on Maia-2; not yet re-run on my Mac (see `docs/08-maia-spike.md`).
   3. **If the spike works:** chesster classifies each flag N / L / X / R automatically (the crossover method), and can also estimate whether an opponent at my level would have punished it. maiachess.com stays the board either way.
 - **Output:** a markdown file per game, which is also its archive entry.
-- **Viewing and reveal:** files are read in VS Code's Markdown preview. Each flag shows its label up top; the engine answer (best move, punishing reply, eval change) sits in a collapsed `<details>` block underneath. To verify: `<details>` folds in VS Code's built-in preview (the Cursor forum reports it does in the dedicated preview).
+- **Viewing and reveal:** files are read in VS Code's Markdown preview, laid out in review order: (1) hot notes: the header to copy into the notebook; (2) own review: the PGN to paste into maiachess.com; (3) engine check: every flag, inside a collapsed `<details>` block to open only after my own review. Inside it, each flag shows its label, and the engine answer (best move, punishing reply, eval change, safe-move count) sits in a second fold underneath. The engine gives facts only, never a verdict on why I went wrong. To verify: `<details>` folds in VS Code's built-in preview (the Cursor forum reports it does in the dedicated preview).
 - **Archive scope:** my entire Chess.com history (the account's archive starts October 2026).
 
 **Review method**
