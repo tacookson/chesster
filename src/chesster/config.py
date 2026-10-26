@@ -58,7 +58,7 @@ def load(path: Path) -> Config:
     if not time_classes or not set(time_classes) <= TIME_CLASSES:
         raise ConfigError(f"time_classes must be from {sorted(TIME_CLASSES)}, not {time_classes!r}")
 
-    mistake = _number(thresholds, "mistake", 20, float, "[thresholds] ")
+    mistake = _number(thresholds, "mistake", 15, float, "[thresholds] ")
     blunder = _number(thresholds, "blunder", 30, float, "[thresholds] ")
     if blunder < mistake:
         raise ConfigError("[thresholds] blunder must be at least mistake")

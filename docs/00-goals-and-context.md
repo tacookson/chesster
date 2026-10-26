@@ -6,7 +6,7 @@
 | --- | --- |
 | Platform | Chess.com |
 | Time control | Rapid, 15+10 |
-| Rating | About 700 Chess.com rapid (roughly 1000–1200 on the Lichess scale) |
+| Rating | 773–816 Chess.com rapid (October 2026). Lichess equivalent roughly 1000–1200, based on ~700; needs re-deriving (Q5) |
 | Volume | 5–7 games a week |
 | Review time budget | 10–20 minutes per game |
 | Note-taking | Physical paper notebook |
@@ -30,11 +30,11 @@
 - **Shape: a companion to maiachess.com.** chesster fetches Chess.com games, archives them, runs Stockfish to list each game's flagged moves, and hands over the PGN to paste into maiachess.com. Positions are studied on maiachess.com with the notebook open. A standalone tool with its own board and local Maia-3 is deferred until pasting into Maia proves to be real friction.
 - **Runs on:** my laptop (macOS), triggered manually. Not GitHub Actions.
 - **Input:** triggered manually when I sit down to review, which may be after several games.
-- **Which games:** every rapid game not already archived (the archive is the record of what's done), with an option to re-run one game by URL. Rapid only by default; an option to include other time controls.
+- **Which games:** every rapid game not already archived (the archive is the record of what's done), with an option to re-run one game by URL. Rapid only by default; an option to include other time controls. Games against Chess.com's coach bots (usernames starting `Coach-`, e.g. Coach-Magnus) are never imported.
 - **Chess.com username:** Me4tbegZ0r (lowercase in API paths: `me4tbegz0r`).
 - **How errors are identified:** Stockfish flags moves by drop in my winning chances. Stockfish alone can't tell whether an error is human-findable at my level, so:
   1. **Baseline (built):** each flag gets a simple type label (allowed mate in N, missed mate in N, lost material, missed material, deeper). Consecutive flags for the same missed idea merge into one moment. Every flag is listed, not just three; I pick which to go deep on. A swing where I was already losing, or was still winning after it, is labelled as not changing the likely result.
-  2. **Spike in parallel:** test Maia locally on macOS (inputs, move probabilities across ratings, speed, licence): Maia-2 first, Maia-3 as the fallback (see `docs/06-build-plan.md`).
+  2. **Spike in parallel:** test Maia locally (inputs, move probabilities across ratings, speed, licence). **Done Oct 25 in the cloud:** go on Maia-3, no-go on Maia-2; not yet re-run on my Mac (see `docs/08-maia-spike.md`).
   3. **If the spike works:** chesster classifies each flag N / L / X / R automatically (the crossover method), and can also estimate whether an opponent at my level would have punished it. maiachess.com stays the board either way.
 - **Output:** a markdown file per game, which is also its archive entry.
 - **Viewing and reveal:** files are read in VS Code's Markdown preview, laid out in review order: (1) hot notes: the header to copy into the notebook; (2) own review: the PGN to paste into maiachess.com; (3) engine check: every flag, inside a collapsed `<details>` block to open only after my own review. Inside it, each flag shows its label, and the engine answer (best move, punishing reply, eval change, safe-move count) sits in a second fold underneath. The engine gives facts only, never a verdict on why I went wrong. To verify: `<details>` folds in VS Code's built-in preview (the Cursor forum reports it does in the dedicated preview).

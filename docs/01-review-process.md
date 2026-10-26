@@ -156,7 +156,7 @@ Copy the tag key inside the front cover, use half a page per game, and keep one 
 A filled-in entry takes about half a page. This one is an invented example.
 
 ```text
-#23  Oct 14  B  Result L  Opp 712  Opening: Italian
+#261014-1  B  Result L  Opp 712  Opening: Italian
 Clock left (me/opp): 6:40 / 9:15
 HOT: Turned at move 14 – lost my knight, then got mated
      Felt fine, played 14...Nd4 fast. Tilted after.

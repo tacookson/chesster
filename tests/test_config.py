@@ -12,7 +12,7 @@ def _load(tmp_path, text):
 def test_defaults(tmp_path):
     cfg = _load(tmp_path, 'username = "Me"\n')
     assert cfg.time_classes == ("rapid",)
-    assert (cfg.depth, cfg.safe_depth, cfg.mistake, cfg.blunder, cfg.decided) == (16, 12, 20, 30, 200)
+    assert (cfg.depth, cfg.safe_depth, cfg.mistake, cfg.blunder, cfg.decided) == (16, 12, 15, 30, 200)
     assert cfg.games_dir == tmp_path / "games"
 
 
