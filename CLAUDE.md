@@ -30,3 +30,4 @@ Tools to help me analyze my own chess games as a 773–816 Chess.com rapid (15+1
 - Facts in `docs/` were researched in October 2026 and may have changed (Chess.com menus, Maia site features, model versions). Verify before depending on them.
 - Open questions about the repo's shape are listed at the end of `PROJECT_BRIEF.md`. Ask me before deciding them.
 - Commits carry no Claude attribution: no `Co-Authored-By: Claude` or `Claude-Session:` lines.
+- Branch names describe the change in short kebab-case, easy to read and type: `maia-classes`, `fix-merge-evals`. No session IDs or random suffixes. If the environment assigns a generated name and won't push anywhere else, use it, and suggest a readable name in the PR so I can rename it.
