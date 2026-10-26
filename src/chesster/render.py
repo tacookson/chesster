@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 import chess
 import chess.pgn
 
-from chesster import analyse
+from chesster import analyse, fetch
 from chesster.analyse import Flag
 
 DRAWS = {"agreed", "repetition", "stalemate", "insufficient", "50move", "timevsinsufficient"}
@@ -44,6 +44,7 @@ class GameInfo:
     rated: bool
     clock_me: str
     clock_opp: str
+    match: str | None = None  # e.g. "261023-1"; rapid games only
 
 
 def _opening(pgn_game) -> str:
@@ -72,7 +73,24 @@ def _last_clocks(pgn_game) -> dict[chess.Color, float | None]:
     return clocks
 
 
-def game_info(game: dict, pgn_game, username: str, timezone: str) -> GameInfo:
+def _local_end(game: dict, timezone: str) -> datetime:
+    return datetime.fromtimestamp(game["end_time"], ZoneInfo(timezone))
+
+
+def match_ids(games: list[dict], timezone: str) -> dict[str, str]:
+    """Match ID per rapid game: local date as YYMMDD, then its number that day by end time."""
+    rapid = sorted((g for g in games if g.get("time_class") == "rapid" and g.get("rules") == "chess"
+                    and not fetch.is_coach(g)),
+                   key=lambda g: g["end_time"])
+    ids, per_day = {}, {}
+    for game in rapid:
+        day = _local_end(game, timezone).strftime("%y%m%d")
+        per_day[day] = per_day.get(day, 0) + 1
+        ids[game["url"].rstrip("/").rsplit("/", 1)[1]] = f"{day}-{per_day[day]}"
+    return ids
+
+
+def game_info(game: dict, pgn_game, username: str, timezone: str, match: str | None = None) -> GameInfo:
     white = game["white"]["username"].lower() == username.lower()
     mine, theirs = (game["white"], game["black"]) if white else (game["black"], game["white"])
     if mine["result"] == "win":
@@ -83,7 +101,7 @@ def game_info(game: dict, pgn_game, username: str, timezone: str) -> GameInfo:
         result, reason = "loss", mine["result"]
     clocks = _last_clocks(pgn_game)
     me = chess.WHITE if white else chess.BLACK
-    end = datetime.fromtimestamp(game["end_time"], ZoneInfo(timezone))
+    end = _local_end(game, timezone)
     return GameInfo(
         id=game["url"].rstrip("/").rsplit("/", 1)[1],
         url=game["url"],
@@ -100,6 +118,7 @@ def game_info(game: dict, pgn_game, username: str, timezone: str) -> GameInfo:
         rated=game.get("rated", False),
         clock_me=_clock(clocks[me]),
         clock_opp=_clock(clocks[not me]),
+        match=match,
     )
 
 
@@ -154,6 +173,20 @@ def _difficulty(safe: tuple[int, int]) -> str:
     return f"{count} of your {legal} legal moves kept your position. {verdict}"
 
 
+def _duration(seconds: float) -> str:
+    seconds = round(seconds)
+    return f"{seconds}s" if seconds < 60 else f"{seconds // 60}m {seconds % 60:02d}s"
+
+
+def _time(clocks: list[tuple[float, float]]) -> str:
+    """Time spent and clock left, e.g. "Time: 4s on this move, 3:12 left." (no engine information)."""
+    spent = [_duration(s) for s, _ in clocks]
+    left = _clock(clocks[-1][1])
+    if len(spent) == 1:
+        return f"Time: {spent[0]} on this move, {left} left."
+    return f"Time: {', '.join(spent[:-1])} and {spent[-1]} on these moves, {left} left after the last."
+
+
 def _moment(flag: Flag, colour: str) -> str:
     labels = [flag.move_label, *flag.merged]
     numbers = [label.split(".")[0] for label in labels]
@@ -167,6 +200,8 @@ def _moment(flag: Flag, colour: str) -> str:
         lines[-1] += f" The same idea was missed on {len(labels)} moves in a row."
     if flag.first_material_loss:
         lines[-1] += " This was the first material you lost in the game."
+    if flag.clocks:
+        lines += ["", _time(flag.clocks)]
     lines += [
         "",
         "<details>",
@@ -202,8 +237,11 @@ def _time_control(tc: str) -> str:
 def render(info: GameInfo, pgn: str, moments: list[Flag] | None) -> str:
     date = datetime.strptime(info.date, "%Y-%m-%d").strftime("%-d %b %Y")
     rated = "rated" if info.rated else "unrated"
+    match = [f"match: {info.match}"] if info.match else []
+    title = f"{info.match} · {date}" if info.match else date
     out = [
         "---",
+        *match,
         f"url: {info.url}",
         f"date: {info.date}",
         f"colour: {info.colour}",
@@ -215,7 +253,7 @@ def render(info: GameInfo, pgn: str, moments: list[Flag] | None) -> str:
         f"rated: {str(info.rated).lower()}",
         "---",
         "",
-        f"# {date} · {info.result.capitalize()} as {info.colour.capitalize()} vs "
+        f"# {title} · {info.result.capitalize()} as {info.colour.capitalize()} vs "
         f"{info.opponent} ({info.opponent_rating})",
         "",
         f"You: {info.my_rating} · {_time_control(info.time_control)} {rated} · {info.opening}  ",

@@ -53,6 +53,7 @@ Add an N/L/X/R letter next to each moment's error tag. On the weekly page, count
 - **The screen may change.** maiachess.com is in beta; some features (like the Move Map) have been hard to locate. Each page has a "?" walkthrough.
 - The 300 / 800 point boundaries, the R rule and the decision order are my own working rules, not values from Maia's research.
 - "My level" stays at 1100 even though my Chess.com rapid rating is now about 773–816; no primary source converts Chess.com to Lichess ratings. Revisit if the classes look skewed.
+- **Expect many R.** In the October spike (`docs/08-maia-spike.md`), the best move led mine at every rating in 22 of 42 flags, so about half would be R under this rule. The spike suggested basing R on P(my move) at 1100 instead (under 5% in 16 of 42). The two-line rule is kept for reading the graph by hand; revisit it for M2.
 
 ## Prior art
 

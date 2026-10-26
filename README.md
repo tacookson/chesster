@@ -2,7 +2,7 @@
 
 A repo that helps me analyze my own chess games. It captures my goals, the review method I've settled on, how I use engines (Stockfish via Chess.com, and Maia), and the research behind those choices.
 
-The knowledge base below was compiled October 25, 2026, from a research and planning conversation. No tooling exists yet; see `PROJECT_BRIEF.md` for candidate features and open questions.
+The knowledge base below was compiled October 25, 2026, from a research and planning conversation. chesster is now built: it fetches my Chess.com games, flags big swings with Stockfish, and writes one markdown file per game. See "Using chesster" below and `docs/06-build-plan.md`.
 
 ## Using chesster
 
@@ -19,6 +19,7 @@ From the repo root:
 uv run chesster                 # fetch new rapid games, flag big swings, write games/YYYY-MM/*.md
 uv run chesster --game <url>    # re-process one game (overwrites its file)
 uv run chesster --no-engine     # archive only, skip Stockfish
+uv run chesster --all-time-controls   # also blitz, bullet and daily games
 uv run --group dev pytest       # run tests
 ```
 
@@ -43,6 +44,7 @@ Settings (username, thresholds, engine depth, Stockfish path) live in `chesster.
 | `docs/05-design-survey.md` | Survey of the current design, its inputs, and gaps to close before building tooling |
 | `docs/06-build-plan.md` | Build plan: slices, Maia spike, file format, and rule defaults |
 | `docs/07-mistake-classification-research.md` | Research: severity, difficulty and cause frameworks for classifying mistakes, and what they mean for chesster |
+| `docs/08-maia-spike.md` | Maia spike (M1): which model maiachess.com runs, Maia-2 vs Maia-3 locally, timings, crossovers in my October flags |
 | `docs/assets/chesscom-analysis-board-example.png` | Screenshot of the Chess.com Analysis board used as the worked example |
 | `templates/game-entry.md` | Per-game notebook entry |
 | `templates/weekly-page.md` | Weekly tally page |

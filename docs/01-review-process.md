@@ -15,7 +15,7 @@ At 700–800, almost every game is decided by safety: hung pieces, missed oppone
 
 | Area | v1 | v2 | Why |
 | --- | --- | --- | --- |
-| Finding swings | Tap through the Chess.com Analysis board watching the number | Read chesster's game file: every move that cut my winning chances by 20+ points, already labelled | Saves about 2 minutes and never misses one |
+| Finding swings | Tap through the Chess.com Analysis board watching the number | Read chesster's game file: every move that cut my winning chances by 15+ points (about a 2-pawn swing), already labelled, with the time I spent on it | Saves about 2 minutes and never misses one |
 | When the engine appears | Self-discipline | Don't open the game file until my own moments are written | The file's headings name the move and what happened before any fold, so opening it early spoils Step 2 |
 | ✓ / ✗ | Did I find this moment myself? | Same, judged against chesster's list | A fixed list makes ✓ objective |
 | My moments that weren't swings | Kept | Struck through, counted | Enforces the 2-point rule; the count shows calibration improving |
@@ -48,7 +48,7 @@ Step 1 happens right after each game. Steps 2–4 happen when I sit down to revi
 
 No next game until these two lines exist. Once I've seen engine output I can't recover what I was thinking.
 
-1. Write header line 1: game number, date, colour, result. Leave the rest of the header for Step 2.
+1. Write header line 1: match ID, colour, result. The match ID is today's date as YYMMDD and which rapid game of the day this was (`261027-2`); chesster puts the same ID in the file's title. Leave the rest of the header for Step 2.
 2. **HOT line 1:** the move where I think the game turned and what happened there.
 3. **HOT line 2:** how I felt and used the clock ("rushed after move 14", "tilted", "fine").
 
@@ -65,13 +65,13 @@ Don't tag yet and don't write ✓. Both depend on Step 3. The left-half columns 
 
 ### Step 3: chesster check (5 min)
 
-Open the game's file in VS Code's Markdown preview (Cmd+Shift+V): `games/YYYY-MM/<date>-vs-<opponent>-<id>.md`. Each flagged move is a heading with one line saying what happened; the engine's answer is folded underneath. Work through the flags in order:
+Open the game's file in VS Code's Markdown preview (Cmd+Shift+V): `games/YYYY-MM/<date>-vs-<opponent>-<id>.md`. Check the title's match ID against the notebook. Each flagged move is a heading with one line saying what happened and a Time line (seconds spent, clock left); the engine's answer is folded underneath. Work through the flags in order:
 
 1. **Match.** Is this move (or one in a merged run, "Moves 15–17") one of my rows? Yes → ✓. No → it's a ✗ moment; add it as a row if it makes the top 3.
 2. **Guess before unfolding.** For a ✗ flag, or any row with "?" under Better, go to the position before the move and spend about a minute looking for the better move. Checks, captures and threats for both sides.
 3. **Unfold "Show the engine's answer".** Read Better and What your move allowed. If the punishment isn't obvious, play it out on the board. If the idea takes more than about 60 seconds to explain, write "engine idea – skip" under Better.
 4. **Use the Difficulty line** (shown on flags where I lost ground). "Careless slip" means most moves were fine: a process error. "Hard spot" means only 1–3 moves held. It doesn't go in the notebook.
-5. **Fill the right half** of the row: <10 s tick, Tag (see Rules), ✓ / ✗. Leave Maia blank unless this is the week's Maia game.
+5. **Fill the right half** of the row: <10 s tick (from the Time line), Tag (see Rules), ✓ / ✗. Leave Maia blank unless this is the week's Maia game.
 6. **Strike out** any of my rows with no flag: draw a line through it and write "–" under ✓/✗. It wasn't a 2-point swing.
 7. **Write the CHK line:** total flags (all of them, even past 3), how many ✓ and ✗, how many rows struck. No flags → "CHK 0 flags".
 
@@ -83,7 +83,7 @@ Open the game's file in VS Code's Markdown preview (Cmd+Shift+V): `games/YYYY-MM
 
 ### Shorter and longer versions
 
-A short review beats a skipped one. Pick the version when I sit down and write it next to the game number (e.g. `#32 lite`).
+A short review beats a skipped one. Pick the version when I sit down and write it next to the match ID (e.g. `#261027-2 lite`).
 
 | Version | Use for | Min | What to do |
 | --- | --- | --- | --- |
@@ -202,7 +202,7 @@ Pick the questions that fit the moment; you don't need all of them every game. T
 Three kinds of page: the tag key inside the front cover (`../templates/tag-key.md`), half a page per game (`../templates/game-entry.md`, with field-by-field instructions and a filled-in example), and one weekly page every Sunday (`../templates/weekly-page.md`, with the drill table).
 
 ```text
-#___  Date ____  W/B  W/L/D how ______   vs __________ (____)  me ____
+#_________  W/B  W/L/D how ______   vs __________ (____)  me ____
 Opening _____________________________   Clock me/opp ____ / ____
 HOT  Turned at move ___: _____________________________________________
      Felt / clock: ___________________________________________________
@@ -278,7 +278,6 @@ The caps are what make this sustainable: up to 3 moments, 1 lesson, 15 minutes.
 - Chess.com menus differ between website and app, and features change often. Menu names here follow Chess.com's help pages as of October 2026.
 - The example entry in `../templates/game-entry.md` is invented for illustration.
 - The selection order, tag precedence and <10 s column are working rules added in v2 (October 26, 2026), not from a published source.
-- chesster does not show time per move yet (planned in slice 3 of `06-build-plan.md`). Until it does, tick the <10 s column from memory and the HOT line.
 
 ## Sources
 

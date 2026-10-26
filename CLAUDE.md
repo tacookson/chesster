@@ -4,7 +4,7 @@ Context for a coding agent working in this repo.
 
 ## What this repo is for
 
-Tools to help me analyze my own chess games as a ~700 Chess.com rapid (15+10) player who reviews 5–7 games a week in 10–20 minutes each and keeps notes in a paper notebook.
+Tools to help me analyze my own chess games as a 773–816 Chess.com rapid (15+10) player who reviews 5–7 games a week in 10–20 minutes each and keeps notes in a paper notebook.
 
 ## Read first
 
@@ -25,6 +25,7 @@ Tools to help me analyze my own chess games as a ~700 Chess.com rapid (15+10) pl
 ## Conventions to watch
 
 - Evaluation sign differs by source (Chess.com: White's view; maiachess.com: side to move). Normalize.
-- Maia ratings are on the Lichess scale; my Chess.com 700 ≈ 1000–1200 there.
+- Maia ratings are on the Lichess scale; my Chess.com rapid is 773–816. "My level" in Maia is 1100 (decided Oct 26, Q5).
 - Facts in `docs/` were researched in October 2026 and may have changed (Chess.com menus, Maia site features, model versions). Verify before depending on them.
 - Open questions about the repo's shape are listed at the end of `PROJECT_BRIEF.md`. Ask me before deciding them.
+- Commits carry no Claude attribution: no `Co-Authored-By: Claude` or `Claude-Session:` lines.

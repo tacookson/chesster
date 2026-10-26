@@ -7,7 +7,7 @@ Week of ______   Played ___   Reviewed ___   W ___  L ___  D ___
 TALLY   H ____  M ____  T ____  K ____  C ____  O ____  E ____
 Top tag ___   Same as last week? Y / N   Last week's rule kept? Y / N
 Found  ✓ ___   ✗ ___     Struck ___     Fast (<10 s) ___ of ___ rows
-Maia game #___   N ___  L ___  X ___  R ___
+Maia game #_________   N ___  L ___  X ___  R ___
 Rule for next week: __________________________________________________
 Drill for next week: _________________________________________________
 ```

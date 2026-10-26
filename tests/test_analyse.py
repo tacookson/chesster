@@ -85,6 +85,39 @@ def test_small_drops_are_not_flagged():
     assert analyse.find_flags(game, chess.WHITE, evals, mistake=20, blunder=30) == []
 
 
+def _mate(n):
+    return analyse.Eval(chess.engine.PovScore(chess.engine.Mate(n), chess.WHITE), [])
+
+
+@pytest.mark.parametrize("before_cp, severity", [(-300, "blunder"), (-750, "mistake"), (-1200, None)])
+def test_walking_into_mate_follows_lichess_grading(before_cp, severity):
+    # Win% barely moves from a lost position, so the mate rule decides the label.
+    game = chess.pgn.read_game(io.StringIO("1. e4 e5 *"))
+    evals = [_eval(before_cp), _mate(-1), _mate(-1)]
+    flags = analyse.find_flags(game, chess.WHITE, evals, mistake=20, blunder=30)
+    assert [f.severity for f in flags] == ([severity] if severity else [])
+
+
+def test_mate_rule_ignores_a_mate_already_on_the_board():
+    assert analyse.mate_severity(_mate(-3), _mate(-1), chess.WHITE) is None
+
+
+def test_material_count_plays_on_until_captures_stop():
+    # White's queen takes a defended pawn: 1. Qxd5 exd5 is a capture after the cut-off.
+    board = chess.Board("4k3/8/4p3/3p4/8/8/8/3QK3 w - - 0 1")
+    pv = [chess.Move.from_uci(m) for m in ("d1d5", "e6d5", "e1e2")]
+    assert analyse._material_after(board, pv, 1, chess.WHITE) == -1
+    assert analyse._material_after(board, pv[:1], 1, chess.WHITE) == 8
+
+
+def test_count_safe_excludes_avoidable_mates():
+    Cp, Mate = chess.engine.Cp, chess.engine.Mate
+    # Lost position: every move is within 20 Win% points, but one walks into mate.
+    assert analyse.count_safe([Cp(-750), Cp(-800), Mate(-1)], mistake=20) == 2
+    assert analyse.count_safe([Mate(-3), Mate(-1)], mistake=20) == 2
+    assert analyse.count_safe([Cp(0), Cp(-50), Cp(-400)], mistake=20) == 2
+
+
 def test_line_formats_black_moves_with_a_space_after_dots():
     board = chess.Board()
     board.push_san("e4")
@@ -96,3 +129,28 @@ def test_captured_names_the_piece():
     board = chess.Board("4k3/8/8/3n4/4P3/8/8/4K3 w - - 0 1")
     assert analyse.captured(board, chess.Move.from_uci("e4d5")) == "knight"
     assert analyse.captured(board, chess.Move.from_uci("e1e2")) == ""
+
+
+CLOCK_PGN = """[TimeControl "900+10"]
+
+1. e4 {[%clk 0:15:05]} e5 {[%clk 0:15:08]} 2. Nf3 {[%clk 0:14:20]} Nc6 {[%clk 0:15:10]} *"""
+
+
+def test_time_spent_adds_the_increment():
+    game = chess.pgn.read_game(io.StringIO(CLOCK_PGN))
+    # 1. e4: 900 − 905 + 10 = 5s; 2. Nf3: 905 − 860 + 10 = 55s.
+    assert analyse.time_spent(game, chess.WHITE) == {0: (5.0, 905.0), 2: (55.0, 860.0)}
+    assert analyse.time_spent(game, chess.BLACK) == {1: (2.0, 908.0), 3: (8.0, 910.0)}
+
+
+def test_time_spent_is_empty_without_a_clock_time_control():
+    game = chess.pgn.read_game(io.StringIO(CLOCK_PGN.replace("900+10", "1/259200")))
+    assert analyse.time_spent(game, chess.WHITE) == {}
+
+
+def test_add_clocks_covers_every_merged_move():
+    game = chess.pgn.read_game(io.StringIO(CLOCK_PGN))
+    moment = _flag(0)
+    moment.merged = ["2. Nf3"]
+    analyse.add_clocks(game, chess.WHITE, [moment])
+    assert moment.clocks == [(5.0, 905.0), (55.0, 860.0)]
