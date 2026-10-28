@@ -14,6 +14,7 @@ VALUES = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.
 LOST_MATERIAL = "lost material"
 MISSED_MATERIAL = "missed material"
 MISSED_MATE = "missed mate"
+MISSED_CHANCE = "missed chance"
 ALLOWED_MATE = "allowed mate"
 DEEPER = "deeper"
 # Flags where I lost ground, as opposed to failing to cash in an opponent's error.
@@ -117,10 +118,11 @@ def _material_after(board: chess.Board, pv: list[chess.Move], plies: int, colour
 
 
 def classify(before_board: chess.Board, after_board: chess.Board, before: Eval, after: Eval,
-             me: chess.Color) -> tuple[str, int | None, int]:
+             me: chess.Color, opponent_erred: bool = False) -> tuple[str, int | None, int]:
     """Type label, mate distance and material (points lost or missed) for a flagged move.
 
-    Precedence: mate, then lost material, then missed material. Any missed mate is a missed
+    Precedence: mate, then lost material, then missed material, then missed chance (the
+    opponent's last move was a mistake and I didn't punish it). Any missed mate is a missed
     chance, whatever its length; the mate distance shows whether it was simple.
     """
     best_mate = before.mate(me)
@@ -138,6 +140,8 @@ def classify(before_board: chess.Board, after_board: chess.Board, before: Eval, 
     missed = _material_after(before_board, before.pv, 5, me) - start
     if missed >= 2:
         return MISSED_MATERIAL, None, missed
+    if opponent_erred:
+        return MISSED_CHANCE, None, 0
     return DEEPER, None, 0
 
 
@@ -153,7 +157,14 @@ def evaluate_game(game, me: chess.Color, engine: chess.engine.SimpleEngine, dept
     return evals
 
 
-def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder: float) -> list[Flag]:
+def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder: float,
+               gave_back: float = 0.5) -> list[Flag]:
+    """Flag my moves that dropped my Win% by `mistake`, or that gave back at least `gave_back`
+    of a gift: Win% the opponent's previous move handed me by being a mistake itself.
+
+    The second rule catches missed chances once I'm already ahead, where the Win% curve
+    flattens and an unpunished blunder can cost me less than `mistake`.
+    """
     board = game.board()
     flags = []
     for ply, node in enumerate(game.mainline()):
@@ -161,12 +172,14 @@ def find_flags(game, me: chess.Color, evals: list[Eval], mistake: float, blunder
         if board.turn == me:
             before, after = evals[ply], evals[ply + 1]
             drop = win_percent(before.cp(me)) - win_percent(after.cp(me))
-            if drop >= mistake:
+            gift = win_percent(before.cp(me)) - win_percent(evals[ply - 1].cp(me)) if ply else 0.0
+            opponent_erred = gift >= mistake
+            if drop >= mistake or (opponent_erred and drop >= gave_back * gift):
                 after_board = board.copy()
                 after_board.push(move)
                 best = before.pv[0] if before.pv else move
                 punish = after.pv[0] if after.pv else None
-                kind, mate_in, points = classify(board, after_board, before, after, me)
+                kind, mate_in, points = classify(board, after_board, before, after, me, opponent_erred)
                 flags.append(Flag(
                     ply=ply,
                     move_label=move_label(board, move),
@@ -234,9 +247,9 @@ def mark_first_material_loss(moments: list[Flag]) -> None:
 
 
 def analyse(game, me: chess.Color, engine: chess.engine.SimpleEngine, depth: int, safe_depth: int,
-            mistake: float, blunder: float, lost: bool) -> list[Flag]:
+            mistake: float, blunder: float, gave_back: float, lost: bool) -> list[Flag]:
     evals = evaluate_game(game, me, engine, depth)
-    moments = merge(find_flags(game, me, evals, mistake, blunder))
+    moments = merge(find_flags(game, me, evals, mistake, blunder, gave_back))
     add_safe_counts(game, me, moments, engine, safe_depth, mistake)
     if lost:
         mark_first_material_loss(moments)

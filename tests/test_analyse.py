@@ -96,3 +96,19 @@ def test_captured_names_the_piece():
     board = chess.Board("4k3/8/8/3n4/4P3/8/8/4K3 w - - 0 1")
     assert analyse.captured(board, chess.Move.from_uci("e4d5")) == "knight"
     assert analyse.captured(board, chess.Move.from_uci("e1e2")) == ""
+
+
+def test_missed_chance_flags_giving_back_half_a_gift_below_the_mistake_bar():
+    # 3...h6 hands White about 25 points; 4. Nf3 gives back about 18 (under the 20-point bar).
+    game = chess.pgn.read_game(io.StringIO("1. d4 d5 2. Bf4 f5 3. e3 h6 4. Nf3 *"))
+    evals = [_eval(30)] * 5 + [_eval(90), _eval(450, ["d1h5", "e8d7"]), _eval(180)]
+    flags = analyse.find_flags(game, chess.WHITE, evals, mistake=20, blunder=30)
+    assert [(f.move_label, f.severity, f.kind) for f in flags] == [
+        ("4. Nf3", "mistake", analyse.MISSED_CHANCE)]
+    assert flags[0].best == "Qh5+"
+
+
+def test_keeping_most_of_a_gift_is_not_flagged():
+    game = chess.pgn.read_game(io.StringIO("1. d4 d5 2. Bf4 f5 3. e3 h6 4. Nf3 *"))
+    evals = [_eval(30)] * 5 + [_eval(90), _eval(450), _eval(330)]
+    assert analyse.find_flags(game, chess.WHITE, evals, mistake=20, blunder=30) == []

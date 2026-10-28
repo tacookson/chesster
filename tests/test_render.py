@@ -41,3 +41,9 @@ def test_merged_moment_lists_every_move():
     text = render._moment(flag, "Black")
     assert "### Moves 15–17 as Black: you played Rab8, a5, Rb5" in text
     assert "The same idea was missed on 3 moves in a row." in text
+
+
+def test_missed_chance_headline():
+    text = render._moment(_flag(kind=analyse.MISSED_CHANCE, material=0, safe=None, severity="mistake"),
+                          "White")
+    assert "**Mistake: your opponent's last move gave you a big chance and you didn't take it.**" in text

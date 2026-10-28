@@ -107,8 +107,8 @@ The header matches the notebook entry's header (date, colour, result, opponent, 
 ### Slice 2: Stockfish flags
 
 - For each of my moves: evaluate before and after at the configured depth, from my point of view. Convert to winning chances (Lichess curve, cp clamped to ±1000, a forced mate counted as ±1000 cp). Flag drops at or above the mistake threshold; mark blunders at the higher threshold.
-- Missed chances need no special case: if the opponent hung a piece, my winning chances before my move are already high, so not taking it shows as a drop.
-- Label each flag by type, in this order: **allowed mate in N**, **missed mate in N**, **lost material** (I'm 2+ points down within 2 moves), **missed material** (the best line wins 2+ within 3 moves), **deeper** (anything else). The mate distance shows whether a mate was simple.
+- Missed chances mostly need no special case: if the opponent hung a piece, my winning chances before my move are already high, so not taking it shows as a drop. The exception is when I'm already ahead: the Win% curve flattens, so an unpunished blunder can cost me less than the mistake threshold. Example (15 Oct game): after 3...h6, 4. Qh5+ was about +5; 4. Nf3 kept about +2, an 18–20 point drop that sat right on the bar. So I also flag a move when the opponent's previous move was itself a mistake (handed me 20+ points) and my reply gave back at least half of that gain (`gave_back` in `chesster.toml`).
+- Label each flag by type, in this order: **allowed mate in N**, **missed mate in N**, **lost material** (I'm 2+ points down within 2 moves), **missed material** (the best line wins 2+ within 3 moves), **missed chance** (the opponent's last move was a mistake and I didn't punish it), **deeper** (anything else). The mate distance shows whether a mate was simple.
 - Mates go through the same Win% rule as everything else (mate = ±1000 cp), not Lichess's separate mate rules: its −700 / −999 cp cut-offs are tuned to its lower bars, and the clamp gives the same behaviour at ours (losing a mate while still +8 isn't flagged; losing it to 0.0 is).
 - Merge consecutive flags for the same missed idea into one moment.
 - **Safe-move count** on flags where I lost ground (types **material**-lost and **deeper**): score every legal move with MultiPV and count those within the mistake threshold of the best move, e.g. "35 of 48 moves held". Not shown on missed chances, where only the punishing move is "safe" and the count reads as hard when it usually isn't. Shown inside the fold, since it hints at the answer. Evidence: `docs/05-design-survey.md`.
@@ -159,6 +159,7 @@ Defaults chesster ships with. All live in `chesster.toml` so they can change wit
 | Order of flags | Game order | Matches stepping through the game on maiachess.com |
 | Cap | Show all flags | The 3-moment cap applies to the notebook; about 2 flags per game in October |
 | First material loss in a loss | Marked | The method says always include it |
+| Missed-chance rule | Flag when the opponent's last move handed me 20+ points and I gave back half or more | Added Oct 28 after 4. Nf3 (15 Oct game) slipped under the 20-point bar. Check the October flag count against the 31 in `docs/05` |
 | Merging | Consecutive flags of my moves with the same best move or punishing reply | Covers the 15...Rab8 / 16...a5 / 17...Rb5 case |
 | Material values | P1 N3 B3 R5 Q9 | Standard |
 

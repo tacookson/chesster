@@ -15,3 +15,7 @@ safe_depth = 12      # depth for the safe-move count (scores every legal move)
 # About 2x Lichess's own bars (5 / 10 / 15); see docs/07.
 mistake = 20
 blunder = 30
+# Also flag my move when the opponent's last move was a mistake (by the bar above) and my
+# reply gave back at least this share of what it handed me. Catches missed chances when I'm
+# already ahead, where the Win% curve flattens and the drop can fall short of `mistake`.
+gave_back = 0.5

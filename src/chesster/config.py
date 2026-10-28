@@ -14,6 +14,7 @@ class Config:
     safe_depth: int
     mistake: float
     blunder: float
+    gave_back: float
 
 
 def load(path: Path) -> Config:
@@ -30,4 +31,5 @@ def load(path: Path) -> Config:
         safe_depth=engine.get("safe_depth", 12),
         mistake=thresholds.get("mistake", 20),
         blunder=thresholds.get("blunder", 30),
+        gave_back=thresholds.get("gave_back", 0.5),
     )
