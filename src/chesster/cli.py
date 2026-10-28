@@ -56,7 +56,7 @@ def process(game: dict, cfg: config.Config, engine: chess.engine.SimpleEngine | 
     if engine is not None:
         me = chess.WHITE if info.colour == "white" else chess.BLACK
         moments = analyse.analyse(pgn_game, me, engine, cfg.depth, cfg.safe_depth,
-                                  cfg.mistake, cfg.blunder, lost=info.result == "loss",
+                                  cfg.mistake, cfg.blunder, cfg.gave_back, lost=info.result == "loss",
                                   progress=progress)
     path = render.path_for(info, cfg.games_dir)
     path.parent.mkdir(parents=True, exist_ok=True)

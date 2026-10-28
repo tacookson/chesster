@@ -111,3 +111,9 @@ def test_renamed_adds_swaps_and_drops_the_prefix():
     assert render.renamed(old, "261023-2").name == "261023-2_2026-10-23-vs-suresh_0705-9.md"
     assert render.renamed(old.with_name("261023-1_" + old.name), "261023-2").name == "261023-2_" + old.name
     assert render.renamed(old.with_name("261023-1_" + old.name), None) == old
+
+
+def test_missed_chance_headline():
+    text = render._moment(_flag(kind=analyse.MISSED_CHANCE, material=0, safe=None, severity="mistake"),
+                          "White")
+    assert "**Mistake: your opponent's last move gave you a big chance and you didn't take it.**" in text

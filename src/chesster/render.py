@@ -161,6 +161,8 @@ def _headline(flag: Flag) -> str:
         what = f"you missed winning {material_words(flag.material)}"
     elif flag.kind == analyse.MISSED_MATE:
         what = f"you missed a mate in {flag.mate_in}"
+    elif flag.kind == analyse.MISSED_CHANCE:
+        what = "your opponent's last move gave you a big chance and you didn't take it"
     elif flag.kind == analyse.ALLOWED_MATE:
         what = f"you allowed a mate in {flag.mate_in}"
     else:
