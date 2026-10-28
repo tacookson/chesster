@@ -154,3 +154,19 @@ def test_add_clocks_covers_every_merged_move():
     moment.merged = ["2. Nf3"]
     analyse.add_clocks(game, chess.WHITE, [moment])
     assert moment.clocks == [(5.0, 905.0), (55.0, 860.0)]
+
+
+def test_missed_chance_flags_giving_back_half_a_gift_below_the_mistake_bar():
+    # 3...h6 hands White about 26 points; 4. Nf3 gives back about 14 (under the 15-point bar).
+    game = chess.pgn.read_game(io.StringIO("1. d4 d5 2. Bf4 f5 3. e3 h6 4. Nf3 *"))
+    evals = [_eval(30)] * 5 + [_eval(90), _eval(450, ["d1h5", "e8d7"]), _eval(230)]
+    flags = analyse.find_flags(game, chess.WHITE, evals, mistake=15, blunder=30)
+    assert [(f.move_label, f.severity, f.kind) for f in flags] == [
+        ("4. Nf3", "mistake", analyse.MISSED_CHANCE)]
+    assert flags[0].best == "Qh5+"
+
+
+def test_keeping_most_of_a_gift_is_not_flagged():
+    game = chess.pgn.read_game(io.StringIO("1. d4 d5 2. Bf4 f5 3. e3 h6 4. Nf3 *"))
+    evals = [_eval(30)] * 5 + [_eval(90), _eval(450), _eval(330)]
+    assert analyse.find_flags(game, chess.WHITE, evals, mistake=15, blunder=30) == []
